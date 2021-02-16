@@ -144,12 +144,14 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 			Bullet * tmp = bulletList[i];
 			bulletList.erase(bulletList.begin() + i);
 			playerTank->damaged(tmp->nDamage);
+			player2Tank->addScore(15);
 			delete tmp;
 		}
 		else if (player2Tank->isContainItems(bulletPeak)) {
 			Bullet * tmp = bulletList[i];
 			bulletList.erase(bulletList.begin() + i);
 			player2Tank->damaged(tmp->nDamage);
+			playerTank->addScore(15);
 			delete tmp;
 		}
 		else {
@@ -244,6 +246,16 @@ void Game::update() {// re-painting game board with new dates.
 	tank2Hp.setFont(*MyFont);
 	gameWindow->draw(tank1Hp);
 	gameWindow->draw(tank2Hp);
+	//coin draw
+	for (unsigned int i = 0; i < coinVec.size(); i++) {
+	  coinVec[i]->drawTo(*gameWindow);
+	}
+	//score counter draw
+	lblP1Score.setFont(*MyFont);
+	lblP2Score.setFont(*MyFont);
+	gameWindow->draw(lblP1Score);
+	gameWindow->draw(lblP2Score);
+
 	gameWindow->display();
 }
 
@@ -312,12 +324,80 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 	tank2Hp.setString(str2Hp.str());
 }
 
+void Game::checkCoins() { //check for intersection with coin
+  //score counter sstreams
+  std::ostringstream ssScoreP1, ssScoreP2;
+  ssScoreP1.str(""); //refresh score label
+  ssScoreP2.str("");
+  ssScoreP1 << " Pts: " << playerTank->getScore();
+  ssScoreP2 << " Pts: " << player2Tank->getScore();
+  lblP1Score.setString(ssScoreP1.str());
+  lblP2Score.setString(ssScoreP2.str());
+  
+  for (unsigned int i = 0; i < coinVec.size(); i++) {
+    if (playerTank->isCollidingWithCoin(coinVec[i])) {
+      coinVec[i]->setPos({12500,12500}); //TEMP "DELETE"
+      playerTank->addScore(10);
+      ssScoreP1.str("");
+      ssScoreP1 << " Pts: " << playerTank->getScore();
+      lblP1Score.setString(ssScoreP1.str());
+    }
+    if (player2Tank->isCollidingWithCoin(coinVec[i])) {
+      coinVec[i]->setPos({12500,12500}); //TEMP "DELETE"
+      player2Tank->addScore(10);
+      ssScoreP2.str("");
+      ssScoreP2 << " Pts: " << player2Tank->getScore();
+      lblP2Score.setString(ssScoreP2.str());
+    }
+  }
+}
+
 Game::Game() {
 	gameWindow = new RenderWindow(VideoMode(1100, 1000), "Game");// init window
 	playerTank = new Tank(BPoint(500, 900), direction::top, BSize(50, 50), Color(100, 255, 100, 255));//init player Tank color:r,g,b,a
 	player2Tank = new Tank(BPoint(500, 100), direction::bot, BSize(50, 50), Color(255, 100, 100, 255));
 	flyThread = new std::thread(&Game::FLY, this);// init fly thread
 	GIFThread = new std::thread(&Game::playExplosion, this);
+	
+	//coin stuff
+	Coin* coin1 = new Coin({15,15});
+	Coin* coin2 = new Coin({15,15});
+	Coin* coin3 = new Coin({15,15});
+	Coin* coin4 = new Coin({15,15});
+	Coin* coin5 = new Coin({15,15});
+	Coin* coin6 = new Coin({15,15});
+	Coin* coin7 = new Coin({15,15});
+	Coin* coin8 = new Coin({15,15});
+	Coin* coin9 = new Coin({15,15});
+	coinVec.push_back(coin1);
+	coinVec.push_back(coin2);
+	coinVec.push_back(coin3);
+	coinVec.push_back(coin4);
+	coinVec.push_back(coin5);
+	coinVec.push_back(coin6);
+	coinVec.push_back(coin7);
+	coinVec.push_back(coin8);
+	coinVec.push_back(coin9);
+	coinVec[0]->setPos({350,400});
+	coinVec[2]->setPos({350,550});
+	coinVec[4]->setPos({490,470});
+	coinVec[3]->setPos({640,400});
+	coinVec[1]->setPos({640,550});
+	coinVec[5]->setPos({490,310});
+	coinVec[6]->setPos({490,620});
+	coinVec[7]->setPos({770,550});
+	coinVec[8]->setPos({210,550});
+
+	//score counter stuff
+	lblP1Score.setCharacterSize(35);
+	lblP2Score.setCharacterSize(35);
+	lblP1Score.setPosition({1000, 35});
+	lblP2Score.setPosition({1000, 135});
+	lblP1Score.setStyle(sf::Text::Bold);
+	lblP2Score.setStyle(sf::Text::Bold);
+	lblP1Score.setFillColor(Color::Green);
+	lblP2Score.setFillColor(Color::Red);
+
 	//Bonus aBonus = Bonus();
 
 
@@ -357,7 +437,7 @@ Game::Game() {
 
 	tank2Hp.setCharacterSize(35); // in pixels, not points!
 	tank2Hp.setStyle(sf::Text::Bold);
-	tank2Hp.setPosition(1000, 50);
+	tank2Hp.setPosition(1000, 100);
 	tank2Hp.setFillColor(Color::Red);
 
 	gameOverText.setCharacterSize(30); // in pixels, not points!
@@ -375,6 +455,7 @@ void Game::play() { // call this function to start playing
 		if (!gameOver) {
 			checkBullets();
 			checkTanks();
+			checkCoins();
 			while (gameWindow->pollEvent(event))// listening events
 			{
 				if (event.type == Event::EventType::JoystickConnected)
@@ -432,6 +513,9 @@ Game::~Game() {
 		delete playerTank;
 	for (unsigned int i = 0; i < bulletList.size(); i++) {
 		delete bulletList[i];
+	}
+	for (unsigned int i = 0; i < coinVec.size(); i++) {
+		delete coinVec[i];
 	}
 	for (unsigned int i = 0; i < boomTextures.size(); i++) {
 		delete boomTextures[i];

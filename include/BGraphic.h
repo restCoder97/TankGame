@@ -8,6 +8,7 @@ using namespace sf;
 
 // Bill Chen's Graphic library
 enum direction { top, right, bot, left };
+enum Align {topLeft,topRight, botLeft,botRight, centerLeft,centerRight,centerTop,centerBot,center,null};
 
 class BSize {
 public:
@@ -87,6 +88,8 @@ class BSprite :public Sprite {
 	BSize spSize;// sprite size
 	direction dic;//current direction
 	Texture*BTexture;// texture
+	Mutex mMutex;
+	
 public:
 
 
@@ -114,12 +117,14 @@ public:
 		BTexture = new Texture(texture);
 	}
 
-	void BSetTexture(Texture texture) {
+	void BSetTexture(Texture&texture) {
+		mMutex.lock();
 		setTexture(texture);
 		float widthScale = (static_cast<float>(spSize.width) / texture.getSize().x);
 		float heightScale = static_cast<float>(spSize.height) / texture.getSize().y;
-		BTexture = new Texture(texture);
+		BTexture = &texture;
 		setScale(widthScale, heightScale);
+		mMutex.unlock();
 	}
 
 	BPoint getPeakPoint() {// grabe vector graph's peak point ex: tank's muzzle, Bullet's warhead
@@ -208,9 +213,99 @@ public:
 	void move(int x, int y){//override move function
 		Sprite::move(float(x), float(y));
 	}
-
+	Sprite getSprite() {
+		Sprite tmp;
+		tmp = *dynamic_cast<Sprite*>(this);
+		tmp.setTexture(*BTexture);
+		return tmp;
+	}
 	~BSprite() {
 		//Sprite::~Sprite();
 		delete BTexture;
 	}
+};
+
+
+class BText :public Text {
+	Font*myFont;
+	Align mAlign = null;
+	FloatRect bdRect;
+public:
+	BText(const String& string, Color aColor, BPoint pt = BPoint(0, 0), unsigned int characterSize = 30,const std::string strFileName = "fonts/font2.ttf"
+		):Text(string,Font(),characterSize) {
+		myFont = new Font();
+		if (!myFont->loadFromFile(strFileName)) {
+			std::cerr << "Can't open font file" << strFileName << std:: endl;
+			throw "Can't open font file";
+			return;
+		}
+		setStyle(sf::Text::Bold);
+		setFillColor(aColor);
+		setPosition(pt.getV2f());
+	}
+	void setAlignment(FloatRect boundRect,Align align) {
+		setFont(*myFont);
+		FloatRect CGRect = Text::getLocalBounds();
+		float width = CGRect.width;
+		float height = CGRect.height;
+		switch (align)
+		{
+		case center:
+			GoCenter(boundRect);
+			break;
+		case topLeft:
+			setPosition(Vector2f(boundRect.left,boundRect.top));
+			break;
+		case topRight:
+			setPosition(Vector2f(boundRect.width-width, boundRect.top));
+			break;
+		case botLeft:
+			setPosition(Vector2f(boundRect.left, boundRect.height-height));
+			break;
+		case botRight:
+			setPosition(Vector2f(boundRect.width-width, boundRect.top-height));
+			break;
+		case centerLeft:
+			GoCenter(boundRect);
+			move(-boundRect.width / 2 + width / 2, 0);
+			break;
+		case centerRight:
+			GoCenter(boundRect);
+			move(boundRect.width / 2 - width / 2, 0);
+			break;
+		case centerTop:
+			GoCenter(boundRect);
+			move(0, -boundRect.height / 2 + height / 2);
+			break;
+		case centerBot:
+			GoCenter(boundRect);
+			move(0, +boundRect.height / 2 - height / 2);
+			break;
+
+		default:
+			break;
+		}
+		mAlign = align;
+		bdRect = boundRect;
+	};
+
+	void GoCenter(FloatRect boundRect) {
+		setFont(*myFont);
+		FloatRect tmp = Text::getLocalBounds();
+		Vector2f a = Vector2f(float(boundRect.width/ 2),float(boundRect.height / 2));
+		setPosition(a);
+		move(-tmp.width /2,  -tmp.height / 2);
+		bdRect = boundRect;
+		mAlign = center;
+	};
+
+	BText() {};
+	Text getText() {
+		setAlignment(bdRect,mAlign);
+		Text tmp = *dynamic_cast<Text*>(this);
+		tmp.setFont(*myFont);
+		return tmp;
+	}
+	
+
 };

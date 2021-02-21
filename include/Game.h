@@ -26,10 +26,12 @@ class Game
 	std::thread*animateThread = nullptr;
 	std::thread*GIFThread = nullptr;
 	bool gameOver = false;
-	Text gameOverText;
-	Text tank1Hp;
-	Text tank2Hp;
+	BText gameOverText;
+	BText tank1Hp;
+	BText tank2Hp;
 	Text lblP1Score, lblP2Score;
+	BText pauseText;
+	RectangleShape pauseView;
 	Font*MyFont;
 	bool flyThreadEnd = false;
 	bool boomPlayed;
@@ -40,7 +42,7 @@ class Game
 	std::vector<Texture*>boomTextures ;
 	RectangleShape dashBoard = RectangleShape(Vector2f(100, 1000));
 	Tank*deadTank= nullptr;
-	GameMap gameMap;
+	GameMap*gameMap;
 	int stickConnected = 0;
 	Clock clock;// will be using for Counting game time and generate random event
 	vector<BSprite>explosionList = {};
@@ -50,12 +52,14 @@ class Game
 	void KeyboardDown(Event event, bool keyboard = true);
 	void KeyboardReleased(Event event);
 	void checkBullets();
-        void checkCoins();
+    void checkCoins();
 	void FLY();
 	void update();
 	void checkTanks();
 	void playBoom();
 	void playExplosion();
+	bool gamePause=false;
+
 
 public:
 	std::vector<Bullet*>bulletList;

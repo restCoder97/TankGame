@@ -16,6 +16,7 @@ public:
 	int indexOfPic;
 	BSprite*sp;
 	std::vector<Texture*>txs;
+	Mutex mMutex;
 
 	GIF(std::vector<std::string>fileName, BPoint pt ) {
 		
@@ -34,7 +35,9 @@ public:
 		indexOfPic++;
 		if (indexOfPic == txs.size())
 			return false;
+		mMutex.lock();
 		sp->BSetTexture(*txs[indexOfPic]);
+		mMutex.unlock();
 		return true;
 	}
 
@@ -49,8 +52,8 @@ class Tank {
 	int nHp = 100;
 	int nDamage;
 	int nSpeed;
-        unsigned int score = 0;
-        sf::RectangleShape tankBox;
+    unsigned int score = 0;
+    sf::RectangleShape tankBox;
 	BLine trajectory;
 	bool isMoving;
 	Clock fireFrequenceClock;

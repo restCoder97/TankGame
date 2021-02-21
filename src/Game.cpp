@@ -5,6 +5,8 @@ using namespace std;
 
 
 void Game::CheckKeyboard() {// come to here if keyboard pressed
+	if (gamePause||gameOver)
+		return;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 		player2Tank->switchDirection(direction::top);
 		player2Tank->move();
@@ -42,9 +44,17 @@ void Game::CheckKeyboard() {// come to here if keyboard pressed
 
 
 void Game::KeyboardDown(Event event, bool keyboard) {//come to here when keyboard button down or joystick moved;
+	
 	auto keyID = event.text.unicode;
 	Keyboard::Key a = event.key.code;
-
+	if (a == Keyboard::Key::Escape)
+		gamePause = !gamePause;
+	if (gamePause|| gameOver) {
+		playerTank->stop();
+		player2Tank->stop();
+		return;
+	}
+		
 	auto joystick = event.joystickMove.axis;
 	auto pt = event.joystickMove.position;
 	auto player = event.joystickMove.joystickId;
@@ -155,22 +165,21 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 			delete tmp;
 		}
 		else {
-			for (int j = 0; j < gameMap.vBricks.size(); j++) {
-			
-				if (gameMap.vBricks[j]->sprite.isContaining(bulletPeak)) {
-					GIF*aGif = new GIF(strExplosion, gameMap.vBricks[j]->sprite.getCenterPoint());
+			for (int j = 0; j < gameMap->vBricks.size(); j++) {
+				if (gameMap->vBricks[j]->sprite.isContaining(bulletPeak)) {
+					GIF*aGif = new GIF(strExplosion, gameMap->vBricks[j]->sprite.getCenterPoint());
 					boomGifs.push_back(aGif);
 					Bullet*tmp = bulletList[i];
-					Brick*abrk = gameMap.vBricks[j];
+					Brick*abrk = gameMap->vBricks[j];
 					bulletList.erase(bulletList.begin() + i);
 					delete tmp;
-					gameMap.vBricks.erase(gameMap.vBricks.begin() + j);
+					gameMap->vBricks.erase(gameMap->vBricks.begin() + j);
 					delete abrk;
 				}
 			}
 
-			for (int k = 0; k < gameMap.vMetals.size(); k++) {
-				if (gameMap.vMetals[k]->sprite.isContaining(bulletPeak)) {
+			for (int k = 0; k < gameMap->vMetals.size(); k++) {
+				if (gameMap->vMetals[k]->sprite.isContaining(bulletPeak)) {
 					if (i < bulletList.size()) {
 						Bullet*tmp = bulletList[i];
 						bulletList.erase(bulletList.begin() + i);
@@ -188,17 +197,19 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 void Game::FLY() {// thread function, move bullets
 	while (!gameOver) {
 		sleep(milliseconds(10));
-		for (unsigned int i = 0; i < bulletList.size(); i++) {
-			Bullet*Tmp = bulletList[i];
-			direction dirFly = Tmp->dirFly;// get shooting direction
-			if (dirFly == 1)
-				Tmp->spBullet->move(BulletSpeed, 0);
-			else if (dirFly == 3)
-				Tmp->spBullet->move(-BulletSpeed, 0);
-			else if (dirFly == top)
-				Tmp->spBullet->move(0, -BulletSpeed);
-			else if (dirFly == bot)
-				Tmp->spBullet->move(0, BulletSpeed);
+		if (!gamePause) {
+			for (unsigned int i = 0; i < bulletList.size(); i++) {
+				Bullet*Tmp = bulletList[i];
+				direction dirFly = Tmp->dirFly;// get shooting direction
+				if (dirFly == 1)
+					Tmp->spBullet->move(BulletSpeed, 0);
+				else if (dirFly == 3)
+					Tmp->spBullet->move(-BulletSpeed, 0);
+				else if (dirFly == top)
+					Tmp->spBullet->move(0, -BulletSpeed);
+				else if (dirFly == bot)
+					Tmp->spBullet->move(0, BulletSpeed);
+			}
 		}
 	}
 	flyThreadEnd = true;
@@ -208,44 +219,30 @@ void Game::FLY() {// thread function, move bullets
 void Game::update() {// re-painting game board with new dates.
 
 	gameWindow->clear();
-	gameMap.paint(gameWindow);
-	playerTank->getSpTank()->setTexture(*playerTank->getSpTank()->getBTexture());
-	gameWindow->draw(*dynamic_cast<Sprite*>(playerTank->getSpTank()));// draw tank
-	player2Tank->getSpTank()->setTexture(*player2Tank->getSpTank()->getBTexture());
-	gameWindow->draw(*dynamic_cast<Sprite*>(player2Tank->getSpTank()));// draw tank
-	//gameMap.paint(gameWindow);
+	gameMap->paint(gameWindow);
+	gameWindow->draw(playerTank->getSpTank()->getSprite());// draw tank
+	gameWindow->draw(player2Tank->getSpTank()->getSprite());// draw tank
 	mMutexExplosion.lock();
 	for (int i = 0; i < boomGifs.size(); i++) {
-		boomGifs[i]->sp->setTexture(*boomGifs[i]->sp->getBTexture());
-		gameWindow->draw(*boomGifs[i]->sp);
+		gameWindow->draw(boomGifs[i]->sp->getSprite());
 	}
 	mMutexExplosion.unlock();
-	
 	for (unsigned int i = 0; i < bulletList.size(); i++) {// draw bullets one by one
-		Bullet*aBullet = bulletList[i];
-		aBullet->spBullet->setTexture(*aBullet->spBullet->getBTexture());
-		gameWindow->draw(*dynamic_cast<Sprite*>(aBullet->spBullet));
+		gameWindow->draw(bulletList[i]->spBullet->getSprite());
 	}
-
-	if (gameOver) {// if game end, draw text
-		gameOverText.setFont(*MyFont);
-		gameWindow->draw(gameOverText);
-	}
+	
 	//painting two tank's front line(three points):
-	for (unsigned int i = 0; i < playerTank->getFrontPoints().size(); i++) {
+	/*for (unsigned int i = 0; i < playerTank->getFrontPoints().size(); i++) {
 		sf::Vertex point(playerTank->getFrontPoints()[i].getV2f(), sf::Color::Yellow);
 		gameWindow->draw(&point, 10, sf::Points);
 	}
 	for (unsigned int i = 0; i < player2Tank->getFrontPoints().size(); i++) {
 		sf::Vertex point(player2Tank->getFrontPoints()[i].getV2f(), sf::Color::Yellow);
 		gameWindow->draw(&point, 10, sf::Points);
-	}
-
+	}*/
 	gameWindow->draw(dashBoard);
-	tank1Hp.setFont(*MyFont);
-	tank2Hp.setFont(*MyFont);
-	gameWindow->draw(tank1Hp);
-	gameWindow->draw(tank2Hp);
+	gameWindow->draw(tank1Hp.getText());
+	gameWindow->draw(tank2Hp.getText());
 	//coin draw
 	for (unsigned int i = 0; i < coinVec.size(); i++) {
 	  coinVec[i]->drawTo(*gameWindow);
@@ -255,7 +252,14 @@ void Game::update() {// re-painting game board with new dates.
 	lblP2Score.setFont(*MyFont);
 	gameWindow->draw(lblP1Score);
 	gameWindow->draw(lblP2Score);
-
+	if (gamePause&&gameOver == false) {
+		gameWindow->draw(pauseView);
+		gameWindow->draw(pauseText.getText());
+	}
+	if (gameOver) {// if game end, draw text
+		gameWindow->draw(pauseView);
+		gameWindow->draw(gameOverText.getText());
+	}
 	gameWindow->display();
 }
 
@@ -264,7 +268,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 	if (playerTank->getHp() <= 0) {
 		deadTank = playerTank;
 		gameOverText.setString("Red Tank Win");
-		gameOverText.setFillColor(Color::Red);
+		//gameOverText.setFillColor(Color::Red);
 		gameOver = true;
 		while (!flyThreadEnd) {
 			sleep(milliseconds(10));
@@ -274,7 +278,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 	else if (player2Tank->getHp() <= 0) {
 		deadTank = player2Tank;
 		gameOverText.setString("Green Tank Win");
-		gameOverText.setFillColor(Color::Green);
+		//gameOverText.setFillColor(Color::Green);
 		gameOver = true;
 		while (!flyThreadEnd) {
 			sleep(milliseconds(10));
@@ -294,17 +298,17 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 		playerTank->stop(true);
 	}
 
-	for (int i = 0; i < gameMap.vBricks.size(); i++) {
-		if (gameMap.vBricks[i]->sprite.isContaining(playerTank->getPtMouth(),&tmp1))
+	for (int i = 0; i < gameMap->vBricks.size(); i++) {
+		if (gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(),&tmp1))
 			playerTank->stop(true);
-		if (gameMap.vBricks[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
+		if (gameMap->vBricks[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
 			player2Tank->stop(true);
 	}
 
-	for (int i = 0; i < gameMap.vMetals.size(); i++) {
-		if (gameMap.vMetals[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
+	for (int i = 0; i < gameMap->vMetals.size(); i++) {
+		if (gameMap->vMetals[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
 			playerTank->stop(true);
-		if (gameMap.vMetals[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
+		if (gameMap->vMetals[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
 			player2Tank->stop(true);
 	}
 
@@ -358,7 +362,18 @@ Game::Game() {
 	player2Tank = new Tank(BPoint(500, 100), direction::bot, BSize(50, 50), Color(255, 100, 100, 255));
 	flyThread = new std::thread(&Game::FLY, this);// init fly thread
 	GIFThread = new std::thread(&Game::playExplosion, this);
+	gameMap = new GameMap();
+	FloatRect gameRect = FloatRect(0, 0, 1000, 1000);
+	pauseView= RectangleShape(Vector2f(1000, 1000));
+	pauseView.setPosition(Vector2f(0, 0));
+	pauseView.setFillColor(Color(0, 0, 0, 230));
+	pauseText = BText("Paused",Color::Red, BPoint(450, 10),50);
+	pauseText.GoCenter(gameRect);
 	
+
+
+
+
 	//coin stuff
 	Coin* coin1 = new Coin({15,15});
 	Coin* coin2 = new Coin({15,15});
@@ -430,19 +445,11 @@ Game::Game() {
 	dashBoard.setFillColor(Color(125, 125, 125));
 	dashBoard.setPosition(1000, 0);
 
-	tank1Hp.setCharacterSize(35); // in pixels, not points!
-	tank1Hp.setStyle(sf::Text::Bold);
-	tank1Hp.setPosition(1000, 0);
-	tank1Hp.setFillColor(Color::Green);
-
-	tank2Hp.setCharacterSize(35); // in pixels, not points!
-	tank2Hp.setStyle(sf::Text::Bold);
-	tank2Hp.setPosition(1000, 100);
-	tank2Hp.setFillColor(Color::Red);
-
-	gameOverText.setCharacterSize(30); // in pixels, not points!
-	gameOverText.setStyle(sf::Text::Bold);
-	gameOverText.setPosition(500, 500);
+	tank1Hp = BText("", Color::Green, BPoint(1000, 0),35);
+	tank2Hp = BText("", Color::Green, BPoint(1000, 100), 35);
+	gameOverText = BText("", Color::Yellow, BPoint(0, 0), 50);
+	gameOverText.GoCenter(gameRect);
+	
 }
 
 void Game::play() { // call this function to start playing
@@ -473,7 +480,7 @@ void Game::play() { // call this function to start playing
 		else {
 			if (boomPlayed) {
 				update();
-				break;
+				//break;
 			}
 		}
 		update();// re-painting
@@ -517,8 +524,9 @@ Game::~Game() {
 	for (unsigned int i = 0; i < coinVec.size(); i++) {
 		delete coinVec[i];
 	}
-	for (unsigned int i = 0; i < boomTextures.size(); i++) {
-		delete boomTextures[i];
+	for (unsigned int i = 0; i < boomTextures.size()-1; i++) {
+		if(boomTextures[i])
+			delete boomTextures[i];
 	}
 	int a = 0;
 	if (gameWindow)

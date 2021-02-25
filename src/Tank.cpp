@@ -1,6 +1,6 @@
 #include "Tank.h"
 #include "Bullet.h"
-#include "Coin.h"
+#include <SFML/Audio.hpp>
 
 void Tank::setGameOver() {
 	gameOver = true;
@@ -8,8 +8,6 @@ void Tank::setGameOver() {
 		sleep(milliseconds(10));
 	}
 }
-
-
 
 Tank::Tank(BPoint pt, direction dc, BSize size, Color aColor) {
 	tankSize = size;
@@ -29,31 +27,25 @@ Tank::Tank(BPoint pt, direction dc, BSize size, Color aColor) {
 	spTank = new BSprite(aTexture, size, top, pt);//tank picture's defualt direction is top
 	spTank->setColor(aColor);
 	moveThread = new std::thread(&Tank::MOVE, this);
-	//moveThread->join();
 	if (dc != top) {
 		switchDirection(dc);
 	}
 	std::vector<int>a;
-	
-	//animatedThread = std::thread(&Tank::playAnimation,this);
 }
 
 bool Tank::isContainItems(BPoint pt, std::vector<BPoint>*vPoint ) {// check if a point is in the tank, use for check bullet hit. and tanks hit each other.
 	BPoint leftTop = getTopLeft();
 	if (!vPoint||vPoint->size() == 0) {
-		//if (pt.x <= (leftTop.x + tankSize.width) && pt.x >= leftTop.x && pt.y <= leftTop.y + tankSize.height && pt.y >= leftTop.y)
 		if(spTank->isContaining(pt))
 			return true;
 	}
 	if (vPoint) {
 		for (unsigned int i = 0; i < vPoint->size(); i++) {
 			pt = vPoint->at(i);
-			//if (pt.x <= (leftTop.x + tankSize.width) && pt.x >= leftTop.x && pt.y <= leftTop.y + tankSize.height && pt.y >= leftTop.y)
 			if (spTank->isContaining(pt))
 				return true;
 		}
 	}
-	
 	return false;
 }
 
@@ -108,23 +100,28 @@ BPoint Tank::getTopLeft() {
 
 void Tank::MOVE() {// moving thread function
 	while (gameOver == false) {
-		sleep(milliseconds(7));//speed is 1 pixel per 10 millisecond
+		if (storedBonus.size() == 0)
+			sleep(milliseconds(20));//speed is 1 pixel per 10 millisecond
+		else if (storedBonus.top()->getId() != 1)
+			sleep(milliseconds(20));//speed is 1 pixel per 10 millisecond
+		else 
+			sleep(milliseconds(10));
 		if (isMoving) {
 		  if (tankFace == 1) {
-		    spTank->move(1, 0);
-		    tankBox.move(1, 0);
+		    spTank->move(2, 0);
+		    tankBox.move(2, 0);
 		  }
 		  else if (tankFace == 3) {
-		      spTank->move(-1, 0);
-		      tankBox.move(-1, 0);
+		      spTank->move(-2, 0);
+		      tankBox.move(-2, 0);
 		  }
 		  else if (tankFace == top) {
-		    spTank->move(0, -1);
-		    tankBox.move(0, -1);
+		    spTank->move(0, -2);
+		    tankBox.move(0, -2);
 		  }
 		  else if (tankFace == bot) {
-		    spTank->move(0, 1);
-		    tankBox.move(0, 1);
+		    spTank->move(0, 2);
+		    tankBox.move(0, 2);
 		  }
 		}
 	}
@@ -132,10 +129,28 @@ void Tank::MOVE() {// moving thread function
 }
 
 void Tank::fire(std::vector<Bullet*>&bList) {// shooting 
-	if (int(fireFrequenceClock.getElapsedTime().asMilliseconds()) < limitFireFrequence)
-		return;
+	if (int(fireFrequenceClock.getElapsedTime().asMilliseconds()) < limitFireFrequence) {
+		if (storedBonus.size() != 0) {
+			if (storedBonus.top()->getId() != 4);
+				return;
+		}	
+		else {
+			return;
+		}
+	}
+	if (storedBonus.size() == 0 || storedBonus.top()->getId() != 4) {
+		if (nBullets <= 0)
+			return;
+	}
+
 	BPoint aPoint = getPtMouth();
-	Bullet*aBullet = new Bullet(getPtMouth(), tankFace);
+	Bullet*aBullet;
+	if(storedBonus.size()!=0&& storedBonus.top()->getId()== 2)
+		aBullet = new Bullet(getPtMouth(), tankFace,20);
+	else
+		aBullet = new Bullet(getPtMouth(), tankFace);
+	if (storedBonus.size() == 0||storedBonus.top()->getId() != 4)
+		nBullets--;
 	bList.push_back(aBullet);// add a bullet to the game
 	sdFire->play();
 	fireFrequenceClock.restart();
@@ -143,7 +158,10 @@ void Tank::fire(std::vector<Bullet*>&bList) {// shooting
 
 // get damage
 void Tank::damaged(int damage) {
-	nHp -= damage;
+	if(storedBonus.size() == 0)
+		nHp -= damage;
+	if(storedBonus.size() != 0 && storedBonus.top()->getId() != 0 )
+		nHp -= damage;
 	if (nHp <= 0) {
 		stop();
 		sdExplosion->play();
@@ -168,7 +186,6 @@ bool Tank::isCollidingWithCoin(Coin* c) {
 [ \SCORE FUNCTIONS ]
 [-----------------*/
 
-void eat() {};// eating bonus 
 
 //start moving
 void Tank::move() {

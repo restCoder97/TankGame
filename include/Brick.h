@@ -13,7 +13,6 @@ public:
 
     const bool isPassable = false;
     const bool isDestroyable = true;
-
     Brick(BPoint pt,Texture);
 };
 

@@ -1,24 +1,21 @@
 #pragma once
-#include<SFML/System.hpp>
-#include<SFML/Graphics.hpp>
-#include<string>
-#include "BGraphic.h"
 #include"Bullet.h"
-#include"Coin.h"
 #include<thread>
-#include <SFML/Audio.hpp>
-#include<iostream>
-#include<sstream>
+#include"Bonus.h"
+#include<stack>
 using namespace sf;
+
 
 class GIF {
 public:
-	int indexOfPic;
-	BSprite*sp;
+
+	int indexOfPic = 0;
+	BSprite*sp = nullptr;
 	std::vector<Texture*>txs;
+	Mutex mMutex;
 
 	GIF(std::vector<std::string>fileName, BPoint pt ) {
-		
+
 		for (int i = 0; i < fileName.size(); i++) {
 			Texture*tmp = new Texture();
 			if (!tmp->loadFromFile(fileName[i])) {
@@ -32,9 +29,11 @@ public:
 
 	bool playNext() {
 		indexOfPic++;
-		if (indexOfPic == txs.size())
+		if (indexOfPic == txs.size() || indexOfPic < 0)
 			return false;
+		mMutex.lock();
 		sp->BSetTexture(*txs[indexOfPic]);
+		mMutex.unlock();
 		return true;
 	}
 
@@ -43,14 +42,14 @@ public:
 const Color NoColor = Color(0, 0, 0, 0);
 class Tank {
 	Texture aTexture;
-	BSprite*spTank;
+	BSprite*spTank = nullptr;
 	BSize tankSize;
 	direction tankFace = top;
 	int nHp = 100;
 	int nDamage;
 	int nSpeed;
-        unsigned int score = 0;
-        sf::RectangleShape tankBox;
+    unsigned int score = 0;
+    sf::RectangleShape tankBox;
 	BLine trajectory;
 	bool isMoving;
 	Clock fireFrequenceClock;
@@ -69,12 +68,16 @@ class Tank {
 	BSound * sdMoving = nullptr;
 	Clock stopClock;
 	int limitFireFrequence = 500;
+	int nBullets = 20;
 	bool justSwitchDic = false;
-	//std::thread animatedThread;
+	bool lockedHP = false;
 	std::thread * moveThread;
+	
+	
 
 public:
-	bool getisMoving() { 
+	std::stack<Bonus*>storedBonus;
+	bool getisMoving() {
 		return isMoving; };// start moving
 	int getHp() { return nHp; }
         unsigned int getScore() { return score; }
@@ -92,11 +95,48 @@ public:
 	// get damage
 	void damaged(int damage);
         //score functions
-        void addScore(unsigned int);
-        bool isCollidingWithCoin(Coin*);
-	void eat() {};// eating bonus
+    void addScore(unsigned int);
+    bool isCollidingWithCoin(Coin*);
+	void eat(Bonus*aBn) {
+		if (aBn->getId() == 3) {
+			nHp = 100;
+			return;
+		}
+		else if (aBn->getId() == 6) {
+			score += 10;
+			return;
+		}
+		if (storedBonus.size() != 0)
+			storedBonus.top()->pauseEffictive();
+		storedBonus.push(aBn);
+		aBn->effictive();
+	};// eating bonus
+
+	void checkingBonus() {
+		if (storedBonus.size() == 0)
+			return;
+		if (!storedBonus.top()->checkEffecting() && !storedBonus.top()->getExpired())
+			storedBonus.top()->effictive();
+		else if(storedBonus.top()->getExpired()){
+			storedBonus.pop();
+			if (!storedBonus.size() == 0)
+				storedBonus.top()->effictive();
+		}
+	}
+	
+
 	//start moving
 	void move();
+	int getBulletAmount() {
+		return nBullets;
+	}
+	void addBullet(unsigned int amount) {
+		nBullets += amount;
+	}
+	void setScore(unsigned int amount) {
+		score = amount;
+	}
+
 	void switchDirection(direction newDic);
 	void stop(bool hittedWall = false);
 	bool outOfScreen();

@@ -50,7 +50,7 @@ void Game::GenerateBonus() {
 	int x = rand()% 950;
 	aBonus->setCenterAt(BPoint(x, y));
 	BonusList.push_back(aBonus);
-	
+
 }
 
 void Game::CheckKeyboard() {// come to here if keyboard pressed
@@ -170,24 +170,24 @@ void Game::KeyboardDown(Event event, bool keyboard) {//come to here when keyboar
 void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 	Keyboard::Key aKey = event.key.code;
 	if (event.joystickButton.joystickId == 1 && event.joystickButton.button == 2) {
-		player2Tank->addBullet(unsigned int(player2Tank->getScore() / 5));
-		player2Tank->setScore(unsigned int(player2Tank->getScore() % 5));
+		player2Tank->addBullet((unsigned int)(player2Tank->getScore() / 5));
+		player2Tank->setScore((unsigned int)(player2Tank->getScore() % 5));
 	}
 
 	if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 2) {
-		playerTank->addBullet(unsigned int(playerTank->getScore() / 5));
-		playerTank->setScore(unsigned int(playerTank->getScore() % 5));
+		playerTank->addBullet((unsigned int)(playerTank->getScore() / 5));
+		playerTank->setScore((unsigned int)(playerTank->getScore() % 5));
 	}
 
 
 	if (aKey == Keyboard::LShift) {
-		player2Tank->addBullet(unsigned int(playerTank->getScore() / 5));
-		player2Tank->setScore(unsigned int(playerTank->getScore() % 5));
+		player2Tank->addBullet((unsigned int)(playerTank->getScore() / 5));
+		player2Tank->setScore((unsigned int)(playerTank->getScore() % 5));
 	}
 
 	if (aKey == Keyboard::RShift) {
-		playerTank->addBullet(unsigned int(playerTank->getScore() / 5));
-		playerTank->setScore(unsigned int(playerTank->getScore() % 5));
+		playerTank->addBullet((unsigned int)(playerTank->getScore() / 5));
+		playerTank->setScore((unsigned int)(playerTank->getScore() % 5));
 	}
 
 
@@ -291,7 +291,7 @@ void Game::update() {// re-painting game board with new dates.
 
 	gameWindow->clear();
 	gameMap->paint(gameWindow);
-	
+
 	gameWindow->draw(playerTank->getSpTank()->getSprite());// draw tank
 	gameWindow->draw(player2Tank->getSpTank()->getSprite());// draw tank
 	mMutexExplosion.lock();
@@ -302,9 +302,9 @@ void Game::update() {// re-painting game board with new dates.
 	for (unsigned int i = 0; i < bulletList.size(); i++) {// draw bullets one by one
 		gameWindow->draw(bulletList[i]->spBullet->getSprite());
 	}
-	
 
-	
+
+
 	//painting two tank's front line(three points):
 	/*for (unsigned int i = 0; i < playerTank->getFrontPoints().size(); i++) {
 		sf::Vertex point(playerTank->getFrontPoints()[i].getV2f(), sf::Color::Yellow);
@@ -328,14 +328,14 @@ void Game::update() {// re-painting game board with new dates.
 	for (Bonus*tmp : BonusList) {
 		gameWindow->draw(tmp->getSprite());
 	}
-	
-	
+
+
 	//score counter draw
 	gameWindow->draw(lblP1Score.getText());
 	gameWindow->draw(lblP2Score.getText());
 	gameWindow->draw(tank1Bullet.getText());
 	gameWindow->draw(tank2Bullet.getText());
-	
+
 
 
 	if (gamePause&&gameOver == false) {
@@ -361,7 +361,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			sleep(milliseconds(10));
 		}
 	}
-	
+
 
 	else if (player2Tank->getHp() <= 0) {
 		deadTank = player2Tank;
@@ -372,7 +372,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			sleep(milliseconds(10));
 		}
 	}
-	
+
 
 	vector<BPoint>tmp2 = player2Tank->getFrontPoints();
 	if(playerTank->isContainItems(player2Tank->getPtMouth(),&tmp2)||player2Tank->outOfScreen())
@@ -393,7 +393,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			player2Tank->stop(true);
 	}
 
-	
+
 
 	for (int i = 0; i < gameMap->vMetals.size(); i++) {
 		if (gameMap->vMetals[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
@@ -406,7 +406,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			playerTank->eat(BonusList[i]);
 			BonusList.erase(BonusList.begin() + i);
 		}
-		
+
 	}
 	for (int i = 0; i < BonusList.size();i++) {
 		if (BonusList[i]->isContaining(player2Tank->getPtMouth(), &tmp1)) {
@@ -467,7 +467,7 @@ Game::Game() {
 	pauseText.GoCenter(gameRect);
 	srand(time(nullptr));
 	for (int i = 0; i < strBnsTxt.size(); i++) {
-		std::string path = strBnsTxt[i].insert(0, "images\\");
+		std::string path = strBnsTxt[i].insert(0, "images/");
 		Texture aTx = Texture();
 		try {
 			if (!aTx.loadFromFile(path)) {
@@ -482,7 +482,7 @@ Game::Game() {
 		}
 		bonusTexturs.push_back(aTx);
 	}
-	
+
 
 	for (int i = 0; i < 1000; i += 50) {
 		for (int j = 0; j < 1000; j += 50) {
@@ -523,7 +523,7 @@ Game::Game() {
 void Game::play() { // call this function to start playing
 	gameWindow->requestFocus();
 	gameClock.restart();
-	
+
 
 	while (gameWindow->isOpen())
 	{

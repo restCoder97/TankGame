@@ -3,8 +3,59 @@
 using namespace sf;
 using namespace std;
 
+BonusType setType(int time=0) {
+	int nType = rand() % 7;
+	int counter = 0;
+	if (time <= 600) {//first 10 minutes game newclear is rare
+		if (nType == 5) {
+			nType = rand() % 7;
+		}
+	}
+	return BonusType(nType);
+}
+
+
+
+void Game::GenerateBonus() {
+	BonusType type = setType(int(gameClock.getElapsedTime().asSeconds()));
+	Bonus*aBonus= new Bonus();
+	switch (type)
+	{
+	case lockHP:
+		aBonus = new LockHP();
+		break;
+	case accelerate:
+		aBonus = new Accelerate();
+		aBonus->setImage(bonusTexturs[type]);
+		break;
+	case damageUp:
+		aBonus = new DamageUp();
+		break;
+	case recovery:
+		aBonus = new Recovery();
+		break;
+	case urf:
+		aBonus = new URF();
+		break;
+	case newclear:
+		aBonus = new Newclear();
+		break;
+	case coin:
+		aBonus = new Coin();
+	default:
+		break;
+	}
+	aBonus->setImage(bonusTexturs[aBonus->getId()]);
+	int y = rand() % 950;
+	int x = rand()% 950;
+	aBonus->setCenterAt(BPoint(x, y));
+	BonusList.push_back(aBonus);
+	
+}
 
 void Game::CheckKeyboard() {// come to here if keyboard pressed
+	if (gamePause||gameOver)
+		return;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
 		player2Tank->switchDirection(direction::top);
 		player2Tank->move();
@@ -42,8 +93,16 @@ void Game::CheckKeyboard() {// come to here if keyboard pressed
 
 
 void Game::KeyboardDown(Event event, bool keyboard) {//come to here when keyboard button down or joystick moved;
+
 	auto keyID = event.text.unicode;
 	Keyboard::Key a = event.key.code;
+	if (a == Keyboard::Key::Escape)
+		gamePause = !gamePause;
+	if (gamePause|| gameOver) {
+		playerTank->stop();
+		player2Tank->stop();
+		return;
+	}
 
 	auto joystick = event.joystickMove.axis;
 	auto pt = event.joystickMove.position;
@@ -110,6 +169,28 @@ void Game::KeyboardDown(Event event, bool keyboard) {//come to here when keyboar
 
 void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 	Keyboard::Key aKey = event.key.code;
+	if (event.joystickButton.joystickId == 1 && event.joystickButton.button == 2) {
+		player2Tank->addBullet(unsigned int(player2Tank->getScore() / 5));
+		player2Tank->setScore(unsigned int(player2Tank->getScore() % 5));
+	}
+
+	if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 2) {
+		playerTank->addBullet(unsigned int(playerTank->getScore() / 5));
+		playerTank->setScore(unsigned int(playerTank->getScore() % 5));
+	}
+
+
+	if (aKey == Keyboard::LShift) {
+		player2Tank->addBullet(unsigned int(playerTank->getScore() / 5));
+		player2Tank->setScore(unsigned int(playerTank->getScore() % 5));
+	}
+
+	if (aKey == Keyboard::RShift) {
+		playerTank->addBullet(unsigned int(playerTank->getScore() / 5));
+		playerTank->setScore(unsigned int(playerTank->getScore() % 5));
+	}
+
+
 	if (event.joystickButton.joystickId == 1 && event.joystickButton.button == 1)
 		player2Tank->fire(bulletList);
 	if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 1)
@@ -155,32 +236,31 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 			delete tmp;
 		}
 		else {
-			for (int j = 0; j < gameMap.vBricks.size(); j++) {
-			
-				if (gameMap.vBricks[j]->sprite.isContaining(bulletPeak)) {
-					GIF*aGif = new GIF(strExplosion, gameMap.vBricks[j]->sprite.getCenterPoint());
+			for (int j = 0; j < gameMap->vBricks.size(); j++) {
+				if (gameMap->vBricks[j]->sprite.isContaining(bulletPeak)) {
+					GIF*aGif = new GIF(strExplosion, gameMap->vBricks[j]->sprite.getCenterPoint());
 					boomGifs.push_back(aGif);
 					Bullet*tmp = bulletList[i];
-					Brick*abrk = gameMap.vBricks[j];
+					Brick*abrk = gameMap->vBricks[j];
 					bulletList.erase(bulletList.begin() + i);
 					delete tmp;
-					gameMap.vBricks.erase(gameMap.vBricks.begin() + j);
+					gameMap->vBricks.erase(gameMap->vBricks.begin() + j);
 					delete abrk;
 				}
 			}
 
-			for (int k = 0; k < gameMap.vMetals.size(); k++) {
-				if (gameMap.vMetals[k]->sprite.isContaining(bulletPeak)) {
+			for (int k = 0; k < gameMap->vMetals.size(); k++) {
+				if (gameMap->vMetals[k]->sprite.isContaining(bulletPeak)) {
 					if (i < bulletList.size()) {
 						Bullet*tmp = bulletList[i];
 						bulletList.erase(bulletList.begin() + i);
 						delete tmp;
 					}
-					
+
 				}
 			}
 		}
-		
+
 
 	}
 }
@@ -188,17 +268,19 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 void Game::FLY() {// thread function, move bullets
 	while (!gameOver) {
 		sleep(milliseconds(10));
-		for (unsigned int i = 0; i < bulletList.size(); i++) {
-			Bullet*Tmp = bulletList[i];
-			direction dirFly = Tmp->dirFly;// get shooting direction
-			if (dirFly == 1)
-				Tmp->spBullet->move(BulletSpeed, 0);
-			else if (dirFly == 3)
-				Tmp->spBullet->move(-BulletSpeed, 0);
-			else if (dirFly == top)
-				Tmp->spBullet->move(0, -BulletSpeed);
-			else if (dirFly == bot)
-				Tmp->spBullet->move(0, BulletSpeed);
+		if (!gamePause) {
+			for (unsigned int i = 0; i < bulletList.size(); i++) {
+				Bullet*Tmp = bulletList[i];
+				direction dirFly = Tmp->dirFly;// get shooting direction
+				if (dirFly == 1)
+					Tmp->spBullet->move(BulletSpeed, 0);
+				else if (dirFly == 3)
+					Tmp->spBullet->move(-BulletSpeed, 0);
+				else if (dirFly == top)
+					Tmp->spBullet->move(0, -BulletSpeed);
+				else if (dirFly == bot)
+					Tmp->spBullet->move(0, BulletSpeed);
+			}
 		}
 	}
 	flyThreadEnd = true;
@@ -208,55 +290,64 @@ void Game::FLY() {// thread function, move bullets
 void Game::update() {// re-painting game board with new dates.
 
 	gameWindow->clear();
-	gameMap.paint(gameWindow);
-	playerTank->getSpTank()->setTexture(*playerTank->getSpTank()->getBTexture());
-	gameWindow->draw(*dynamic_cast<Sprite*>(playerTank->getSpTank()));// draw tank
-	player2Tank->getSpTank()->setTexture(*player2Tank->getSpTank()->getBTexture());
-	gameWindow->draw(*dynamic_cast<Sprite*>(player2Tank->getSpTank()));// draw tank
-	//gameMap.paint(gameWindow);
+	gameMap->paint(gameWindow);
+	
+	gameWindow->draw(playerTank->getSpTank()->getSprite());// draw tank
+	gameWindow->draw(player2Tank->getSpTank()->getSprite());// draw tank
 	mMutexExplosion.lock();
 	for (int i = 0; i < boomGifs.size(); i++) {
-		boomGifs[i]->sp->setTexture(*boomGifs[i]->sp->getBTexture());
-		gameWindow->draw(*boomGifs[i]->sp);
+		gameWindow->draw(boomGifs[i]->sp->getSprite());
 	}
 	mMutexExplosion.unlock();
-	
 	for (unsigned int i = 0; i < bulletList.size(); i++) {// draw bullets one by one
-		Bullet*aBullet = bulletList[i];
-		aBullet->spBullet->setTexture(*aBullet->spBullet->getBTexture());
-		gameWindow->draw(*dynamic_cast<Sprite*>(aBullet->spBullet));
+		gameWindow->draw(bulletList[i]->spBullet->getSprite());
 	}
+	
 
-	if (gameOver) {// if game end, draw text
-		gameOverText.setFont(*MyFont);
-		gameWindow->draw(gameOverText);
-	}
+	
 	//painting two tank's front line(three points):
-	for (unsigned int i = 0; i < playerTank->getFrontPoints().size(); i++) {
+	/*for (unsigned int i = 0; i < playerTank->getFrontPoints().size(); i++) {
 		sf::Vertex point(playerTank->getFrontPoints()[i].getV2f(), sf::Color::Yellow);
 		gameWindow->draw(&point, 10, sf::Points);
 	}
 	for (unsigned int i = 0; i < player2Tank->getFrontPoints().size(); i++) {
 		sf::Vertex point(player2Tank->getFrontPoints()[i].getV2f(), sf::Color::Yellow);
 		gameWindow->draw(&point, 10, sf::Points);
-	}
-
+	}*/
 	gameWindow->draw(dashBoard);
-	tank1Hp.setFont(*MyFont);
-	tank2Hp.setFont(*MyFont);
-	gameWindow->draw(tank1Hp);
-	gameWindow->draw(tank2Hp);
+	gameWindow->draw(tank1Hp.getText());
+	gameWindow->draw(tank2Hp.getText());
 	//coin draw
-	for (unsigned int i = 0; i < coinVec.size(); i++) {
-	  coinVec[i]->drawTo(*gameWindow);
+	if (player2Tank->storedBonus.size() != 0) {
+		int a = player2Tank->storedBonus.top()->getId();
+		String b = to_string(a);
+		BText tx = BText(b, Color::Red, BPoint(100, 100), MyFont);
+		gameWindow->draw(tx.getText());
 	}
-	//score counter draw
-	lblP1Score.setFont(*MyFont);
-	lblP2Score.setFont(*MyFont);
-	gameWindow->draw(lblP1Score);
-	gameWindow->draw(lblP2Score);
 
+	for (Bonus*tmp : BonusList) {
+		gameWindow->draw(tmp->getSprite());
+	}
+	
+	
+	//score counter draw
+	gameWindow->draw(lblP1Score.getText());
+	gameWindow->draw(lblP2Score.getText());
+	gameWindow->draw(tank1Bullet.getText());
+	gameWindow->draw(tank2Bullet.getText());
+	
+
+
+	if (gamePause&&gameOver == false) {
+		gameWindow->draw(pauseView);
+		gameWindow->draw(pauseText.getText());
+	}
+	if (gameOver) {// if game end, draw text
+		gameWindow->draw(pauseView);
+		gameWindow->draw(gameOverText.getText());
+	}
 	gameWindow->display();
+	//aEdit.setFocus(gameWindow);
 }
 
 
@@ -270,6 +361,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			sleep(milliseconds(10));
 		}
 	}
+	
 
 	else if (player2Tank->getHp() <= 0) {
 		deadTank = player2Tank;
@@ -280,33 +372,50 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			sleep(milliseconds(10));
 		}
 	}
-
 	
+
 	vector<BPoint>tmp2 = player2Tank->getFrontPoints();
 	if(playerTank->isContainItems(player2Tank->getPtMouth(),&tmp2)||player2Tank->outOfScreen())
 	{
 		player2Tank->stop(true);
 	}
 
-	
+
 	vector<BPoint>tmp1 = playerTank->getFrontPoints();
 	if (player2Tank->isContainItems(playerTank->getPtMouth(),&tmp1) || playerTank->outOfScreen()){
 		playerTank->stop(true);
 	}
 
-	for (int i = 0; i < gameMap.vBricks.size(); i++) {
-		if (gameMap.vBricks[i]->sprite.isContaining(playerTank->getPtMouth(),&tmp1))
+	for (int i = 0; i < gameMap->vBricks.size(); i++) {
+		if (gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(),&tmp1))
 			playerTank->stop(true);
-		if (gameMap.vBricks[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
+		if (gameMap->vBricks[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
 			player2Tank->stop(true);
 	}
 
-	for (int i = 0; i < gameMap.vMetals.size(); i++) {
-		if (gameMap.vMetals[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
+	
+
+	for (int i = 0; i < gameMap->vMetals.size(); i++) {
+		if (gameMap->vMetals[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
 			playerTank->stop(true);
-		if (gameMap.vMetals[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
+		if (gameMap->vMetals[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
 			player2Tank->stop(true);
 	}
+	for (int i = 0; i < BonusList.size(); i++) {
+		if (BonusList[i]->isContaining(playerTank->getPtMouth(), &tmp1)) {
+			playerTank->eat(BonusList[i]);
+			BonusList.erase(BonusList.begin() + i);
+		}
+		
+	}
+	for (int i = 0; i < BonusList.size();i++) {
+		if (BonusList[i]->isContaining(player2Tank->getPtMouth(), &tmp1)) {
+			player2Tank->eat(BonusList[i]);
+			BonusList.erase(BonusList.begin() + i);
+		}
+	}
+	player2Tank->checkingBonus();
+	playerTank->checkingBonus();
 
 	if (gameOver) {
 		player2Tank->stop();
@@ -316,41 +425,32 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 		animateThread = new std::thread(&Game::playBoom, this);
 	}
 
+	std::ostringstream ssScoreP1, ssScoreP2;
+	ssScoreP1.str(""); //refresh score label
+	ssScoreP2.str("");
+	ssScoreP1 << " Pts: " << playerTank->getScore();
+	ssScoreP2 << " Pts: " << player2Tank->getScore();
+	lblP1Score = BText(ssScoreP1.str(), Color::Green, BPoint(1000, 35),MyFont);
+	lblP2Score = BText(ssScoreP2.str(), Color::Red, BPoint(1000, 935),MyFont);
+
+
 	std::ostringstream str1HP, str2Hp;
 	std::string hp = " Hp: ";
 	str1HP << hp << playerTank->getHp();
 	str2Hp << hp << player2Tank->getHp();
 	tank1Hp.setString(str1HP.str());
 	tank2Hp.setString(str2Hp.str());
+
+	std::ostringstream str1Bullet, str2Bullet;
+	std::string Ammo = " Ammo: ";
+	str1Bullet << Ammo << playerTank->getBulletAmount();
+	str2Bullet << Ammo << player2Tank->getBulletAmount();
+	tank1Bullet = BText(str1Bullet.str(), Color::Green, BPoint(1000, 65), MyFont);
+	tank2Bullet = BText(str2Bullet.str(), Color::Red, BPoint(1000, 965), MyFont);
+
 }
 
-void Game::checkCoins() { //check for intersection with coin
-  //score counter sstreams
-  std::ostringstream ssScoreP1, ssScoreP2;
-  ssScoreP1.str(""); //refresh score label
-  ssScoreP2.str("");
-  ssScoreP1 << " Pts: " << playerTank->getScore();
-  ssScoreP2 << " Pts: " << player2Tank->getScore();
-  lblP1Score.setString(ssScoreP1.str());
-  lblP2Score.setString(ssScoreP2.str());
-  
-  for (unsigned int i = 0; i < coinVec.size(); i++) {
-    if (playerTank->isCollidingWithCoin(coinVec[i])) {
-      coinVec[i]->setPos({12500,12500}); //TEMP "DELETE"
-      playerTank->addScore(10);
-      ssScoreP1.str("");
-      ssScoreP1 << " Pts: " << playerTank->getScore();
-      lblP1Score.setString(ssScoreP1.str());
-    }
-    if (player2Tank->isCollidingWithCoin(coinVec[i])) {
-      coinVec[i]->setPos({12500,12500}); //TEMP "DELETE"
-      player2Tank->addScore(10);
-      ssScoreP2.str("");
-      ssScoreP2 << " Pts: " << player2Tank->getScore();
-      lblP2Score.setString(ssScoreP2.str());
-    }
-  }
-}
+
 
 Game::Game() {
 	gameWindow = new RenderWindow(VideoMode(1100, 1000), "Game");// init window
@@ -358,48 +458,31 @@ Game::Game() {
 	player2Tank = new Tank(BPoint(500, 100), direction::bot, BSize(50, 50), Color(255, 100, 100, 255));
 	flyThread = new std::thread(&Game::FLY, this);// init fly thread
 	GIFThread = new std::thread(&Game::playExplosion, this);
+	gameMap = new GameMap();
+	FloatRect gameRect = FloatRect(0, 0, 1000, 1000);
+	pauseView= RectangleShape(Vector2f(1000, 1000));
+	pauseView.setPosition(Vector2f(0, 0));
+	pauseView.setFillColor(Color(0, 0, 0, 230));
+	pauseText = BText("Paused",Color::Red, BPoint(450, 10),MyFont,50);
+	pauseText.GoCenter(gameRect);
+	srand(time(nullptr));
+	for (int i = 0; i < strBnsTxt.size(); i++) {
+		std::string path = strBnsTxt[i].insert(0, "images\\");
+		Texture aTx = Texture();
+		try {
+			if (!aTx.loadFromFile(path)) {
+				throw "Can't find Bonus image!";
+			}
+		}
+		catch(const char*a){
+			cerr << a << endl;
+			bonusMechanic = false;
+			bonusMechanic = {};
+			break;
+		}
+		bonusTexturs.push_back(aTx);
+	}
 	
-	//coin stuff
-	Coin* coin1 = new Coin({15,15});
-	Coin* coin2 = new Coin({15,15});
-	Coin* coin3 = new Coin({15,15});
-	Coin* coin4 = new Coin({15,15});
-	Coin* coin5 = new Coin({15,15});
-	Coin* coin6 = new Coin({15,15});
-	Coin* coin7 = new Coin({15,15});
-	Coin* coin8 = new Coin({15,15});
-	Coin* coin9 = new Coin({15,15});
-	coinVec.push_back(coin1);
-	coinVec.push_back(coin2);
-	coinVec.push_back(coin3);
-	coinVec.push_back(coin4);
-	coinVec.push_back(coin5);
-	coinVec.push_back(coin6);
-	coinVec.push_back(coin7);
-	coinVec.push_back(coin8);
-	coinVec.push_back(coin9);
-	coinVec[0]->setPos({350,400});
-	coinVec[2]->setPos({350,550});
-	coinVec[4]->setPos({490,470});
-	coinVec[3]->setPos({640,400});
-	coinVec[1]->setPos({640,550});
-	coinVec[5]->setPos({490,310});
-	coinVec[6]->setPos({490,620});
-	coinVec[7]->setPos({770,550});
-	coinVec[8]->setPos({210,550});
-
-	//score counter stuff
-	lblP1Score.setCharacterSize(35);
-	lblP2Score.setCharacterSize(35);
-	lblP1Score.setPosition({1000, 35});
-	lblP2Score.setPosition({1000, 135});
-	lblP1Score.setStyle(sf::Text::Bold);
-	lblP2Score.setStyle(sf::Text::Bold);
-	lblP1Score.setFillColor(Color::Green);
-	lblP2Score.setFillColor(Color::Red);
-
-	//Bonus aBonus = Bonus();
-
 
 	for (int i = 0; i < 1000; i += 50) {
 		for (int j = 0; j < 1000; j += 50) {
@@ -430,32 +513,23 @@ Game::Game() {
 	dashBoard.setFillColor(Color(125, 125, 125));
 	dashBoard.setPosition(1000, 0);
 
-	tank1Hp.setCharacterSize(35); // in pixels, not points!
-	tank1Hp.setStyle(sf::Text::Bold);
-	tank1Hp.setPosition(1000, 0);
-	tank1Hp.setFillColor(Color::Green);
+	tank1Hp = BText("", Color::Green, BPoint(1000, 0),MyFont,35);
+	tank2Hp = BText("", Color::Red, BPoint(1000, 900), MyFont,35);
+	gameOverText = BText("", Color::Yellow, BPoint(0, 0), MyFont, 50);
+	gameOverText.GoCenter(gameRect);
 
-	tank2Hp.setCharacterSize(35); // in pixels, not points!
-	tank2Hp.setStyle(sf::Text::Bold);
-	tank2Hp.setPosition(1000, 100);
-	tank2Hp.setFillColor(Color::Red);
-
-	gameOverText.setCharacterSize(30); // in pixels, not points!
-	gameOverText.setStyle(sf::Text::Bold);
-	gameOverText.setPosition(500, 500);
 }
 
 void Game::play() { // call this function to start playing
 	gameWindow->requestFocus();
-	clock.restart();
+	gameClock.restart();
 	
-	
+
 	while (gameWindow->isOpen())
 	{
 		if (!gameOver) {
 			checkBullets();
 			checkTanks();
-			checkCoins();
 			while (gameWindow->pollEvent(event))// listening events
 			{
 				if (event.type == Event::EventType::JoystickConnected)
@@ -469,11 +543,16 @@ void Game::play() { // call this function to start playing
 				if (event.type == sf::Event::EventType::KeyReleased || event.type == sf::Event::EventType::JoystickButtonReleased)//|| Event::EventType::JoystickButtonPressed)
 					KeyboardReleased(event);
 			}
+			int time = int(gameClock.getElapsedTime().asSeconds());
+			int r = rand();
+			if ((time % 10) == r %10 && time !=0 && !(BonusList.size() >= 4)) {
+				GenerateBonus();
+			}
 		}
 		else {
 			if (boomPlayed) {
 				update();
-				break;
+				//break;
 			}
 		}
 		update();// re-painting
@@ -489,7 +568,7 @@ void Game::playExplosion() {
 				boomGifs.erase(boomGifs.begin()+i);
 		}
 		mMutexExplosion.unlock();
-	}	
+	}
 }
 
 void Game::playBoom() {//paint gif
@@ -517,8 +596,9 @@ Game::~Game() {
 	for (unsigned int i = 0; i < coinVec.size(); i++) {
 		delete coinVec[i];
 	}
-	for (unsigned int i = 0; i < boomTextures.size(); i++) {
-		delete boomTextures[i];
+	for (unsigned int i = 0; i < boomTextures.size()-1; i++) {
+		if(boomTextures[i])
+			delete boomTextures[i];
 	}
 	int a = 0;
 	if (gameWindow)

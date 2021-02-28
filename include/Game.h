@@ -60,7 +60,7 @@ class Game
 	void playExplosion();
 	bool gamePause=false;
 	void GenerateBonus();
-	
+
 
 public:
 	std::vector<Bullet*>bulletList;

@@ -1,6 +1,8 @@
 #include "Tank.h"
 #include "Bullet.h"
 #include <SFML/Audio.hpp>
+#include<iostream>
+
 
 void Tank::setGameOver() {
 	gameOver = true;
@@ -104,7 +106,7 @@ void Tank::MOVE() {// moving thread function
 			sleep(milliseconds(20));//speed is 1 pixel per 10 millisecond
 		else if (storedBonus.top()->getId() != 1)
 			sleep(milliseconds(20));//speed is 1 pixel per 10 millisecond
-		else 
+		else
 			sleep(milliseconds(10));
 		if (isMoving) {
 		  if (tankFace == 1) {
@@ -128,12 +130,12 @@ void Tank::MOVE() {// moving thread function
 	MvThreadEnd = true;
 }
 
-void Tank::fire(std::vector<Bullet*>&bList) {// shooting 
+void Tank::fire(std::vector<Bullet*>&bList) {// shooting
 	if (int(fireFrequenceClock.getElapsedTime().asMilliseconds()) < limitFireFrequence) {
 		if (storedBonus.size() != 0) {
 			if (storedBonus.top()->getId() != 4);
 				return;
-		}	
+		}
 		else {
 			return;
 		}
@@ -204,7 +206,7 @@ void Tank::switchDirection(direction newDic) {
 	if(tankFace != newDic)
 		justSwitchDic = true;
 	spTank->BRotate(newDic);
-	tankFace = newDic;	
+	tankFace = newDic;
 }
 
 
@@ -228,4 +230,10 @@ Tank::~Tank() {
 		delete sdExplosion;
 	if (sdMoving)
 		delete sdMoving;
+}
+
+//decide where to go
+//go there;
+void AITank::think(){
+	std::cout << "thot"<< std::endl;
 }

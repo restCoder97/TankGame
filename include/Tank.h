@@ -3,6 +3,8 @@
 #include<thread>
 #include"Bonus.h"
 #include<stack>
+#include"GameMap.h"
+
 using namespace sf;
 
 
@@ -72,10 +74,11 @@ class Tank {
 	bool justSwitchDic = false;
 	bool lockedHP = false;
 	std::thread * moveThread;
-	
-	
+
+
 
 public:
+
 	std::stack<Bonus*>storedBonus;
 	bool getisMoving() {
 		return isMoving; };// start moving
@@ -123,7 +126,7 @@ public:
 				storedBonus.top()->effictive();
 		}
 	}
-	
+
 
 	//start moving
 	void move();
@@ -141,4 +144,19 @@ public:
 	void stop(bool hittedWall = false);
 	bool outOfScreen();
 	~Tank();
+};
+
+class AITank : public Tank{
+public:
+	GameMap* surroundings = nullptr;
+	Tank* enemy = nullptr;
+	std::vector<Bullet*>* bList = nullptr;
+  void think();
+	AITank(BPoint pt, direction dc, BSize size, Color aColor, Tank* target, GameMap* map, std::vector<Bullet*>* bvec)
+	: Tank(pt, dc, size, aColor) {
+		enemy = target;
+		surroundings = map;
+		bList = bvec;
+	};
+
 };

@@ -1,8 +1,8 @@
 #include "Tank.h"
 #include "Bullet.h"
 #include <SFML/Audio.hpp>
-#include<iostream>
-
+//#include<iostream>
+#include<algorithm>
 
 void Tank::setGameOver() {
 	gameOver = true;
@@ -235,18 +235,51 @@ Tank::~Tank() {
 //decide where to go
 //go there;
 void AITank::think(){
-	//std::cout << "thot"<< std::endl;
 
 
-	int eX = enemy->getPtMouth().x;
-	int eY = enemy->getPtMouth().y;
+	//think only on a tile centre
+	/*
+	if( ((int)(getPtMouth().x)) % 20 != 10 && ((int)(getPtMouth().y)) % 20 != 10)
+		return;
+	std::cout << "thot"<< std::endl;
+	*/
 
-	//int eX = enemy->((int)(getPtMouth().x)), eY = enemy->((int)(getPtMouth().y));
-	if(eX > ((int)(getPtMouth().x))) switchDirection(direction::right);
-	else if(eX < ((int)(getPtMouth().x))) switchDirection(direction::left);
-	else if(eY > ((int)(getPtMouth().y))) switchDirection(direction::bot);
-	else if(eY < ((int)(getPtMouth().y))) switchDirection(direction::top);
+
+	int dX = enemy->getPtMouth().x - ((int)(getPtMouth().x));
+	int dY = enemy->getPtMouth().y - ((int)(getPtMouth().y));
+	int qX = (getPtMouth().x)/(getSpTank()->spSize.width);
+	int qY = (getPtMouth().y)/(getSpTank()->spSize.height);
+
+	/*
+	std::cout << "x:" << ((int)(getPtMouth().x)) << " y:" << ((int)(getPtMouth().y))
+						<< " qX = " << qX
+						<< " qY = " << qY << std::endl;
+	*/
+
+	std::cout << surroundings->potField.size() << std::endl;
+
+	if(std::abs(dX) > (getSpTank()->spSize.width)){ //prefer X
+		if(dX > 0 && surroundings->potField[(int)qX+1][(int)qY] != 2){
+			switchDirection(direction::right);
+
+			if(surroundings->potField[(int)qX+1][(int)qY] == 1)
+				fire(*bList);
+
+		}
+		else{
+			switchDirection(direction::left);
+
+			/*
+			if(surroundings->potField[qX-1][qY] == 1)
+				fire(*bList);
+			*/
+
+		}
+	}
+	else{
+		if(dY > 0) switchDirection(direction::bot);
+		else switchDirection(direction::top);
+
+	}
 	move();
-	fire(*bList);
-
 }

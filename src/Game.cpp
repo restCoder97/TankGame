@@ -454,11 +454,11 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 
 Game::Game() {
 	gameWindow = new RenderWindow(VideoMode(1100, 1000), "Game");// init window
-	playerTank = new Tank(BPoint(500, 900), direction::top, BSize(50, 50), Color(100, 255, 100, 255));//init player Tank color:r,g,b,a
-	player2Tank = new AITank(BPoint(500, 100), direction::bot, BSize(50, 50), Color(255, 100, 100, 255), playerTank,  gameMap, &bulletList);
 	flyThread = new std::thread(&Game::FLY, this);// init fly thread
 	GIFThread = new std::thread(&Game::playExplosion, this);
 	gameMap = new GameMap();
+	playerTank = new Tank(BPoint(500, 900), direction::top, BSize(50, 50), Color(100, 255, 100, 255));//init player Tank color:r,g,b,a
+	player2Tank = new AITank(BPoint(500, 100), direction::bot, BSize(50, 50), Color(255, 100, 100, 255), playerTank,  gameMap, &bulletList);
 	FloatRect gameRect = FloatRect(0, 0, 1000, 1000);
 	pauseView= RectangleShape(Vector2f(1000, 1000));
 	pauseView.setPosition(Vector2f(0, 0));

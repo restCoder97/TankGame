@@ -548,6 +548,9 @@ void Game::play() { // call this function to start playing
 			if ((time % 10) == r %10 && time !=0 && !(BonusList.size() >= 4)) {
 				GenerateBonus();
 			}
+
+			player2Tank->think();
+
 		}
 		else {
 			if (boomPlayed) {

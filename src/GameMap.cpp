@@ -6,6 +6,8 @@
 #include <cstdlib>
 #include <cstring>
 #include"BGraphic.h"
+#include<iostream>
+
 const string strBrick = "images/brickes.png";
 const string strMetal = "images/metal.png";
 void GameMap::setUpTiles()
@@ -17,29 +19,55 @@ void GameMap::setUpTiles()
 		exit(1);
 	}
 
+		int x, y, qX, qY;
+
     while (!brickPos.eof()) {
-        int x;
-        int y;
+        x = 0;
+        y = 0;
         brickPos.read(reinterpret_cast<char*>(&y), sizeof(int));
         brickPos.read(reinterpret_cast<char*>(&x), sizeof(int));
-		BPoint pt  = BPoint(x, y);
+				BPoint pt  = BPoint(x, y);
+
+
         Brick* aBrick = new Brick(pt,bricksTexture);
+				if(aBrick->sprite.spSize.width){
+					qX = x / ((int)(aBrick->sprite.spSize.width));
+					qY = y / ((int)(aBrick->sprite.spSize.height));
+					potField[qX][qY] = 1; //
+				}
+
+
         vBricks.push_back(aBrick);
     }
 
     while (!metalPos.eof()) {
-        int x;
-        int y;
+				x = 0;
+				y = 0;
         metalPos.read(reinterpret_cast<char*>(&y), sizeof(int));
         metalPos.read(reinterpret_cast<char*>(&x), sizeof(int));
-		BPoint pt = BPoint(x, y);
+				BPoint pt = BPoint(x, y);
+
+
+
         Metal* aMetal = new Metal(pt,metalTexture);
+				if(aMetal->sprite.spSize.width){
+					qX = x / ((int)(aMetal->sprite.spSize.width));
+					qY = y / ((int)(aMetal->sprite.spSize.height));
+					potField[qX][qY] = 2; //
+				}
+
+
         vMetals.push_back(aMetal);
     }
 }
 
 GameMap::GameMap(){
     gridLength = 20;
+		vector<int> r(gridLength, 0);
+		for(int i = 0; i < gridLength; i++){
+			potField.push_back(r);
+		}
+		std::cout << potField.size() << " by " << potField[0].size() << std::endl;
     setUpTiles();
 }
 
@@ -49,10 +77,10 @@ void GameMap::paint(sf::RenderWindow* window){
 		vBricks[i]->sprite.setTexture(bricksTexture);
 		window->draw(*dynamic_cast<sf::Sprite*>(&vBricks[i]->sprite));
 	}
-        
+
 	for (auto i = 0; i < vMetals.size(); ++i) {
 		vMetals[i]->sprite.setTexture(metalTexture);
 		window->draw(*dynamic_cast<sf::Sprite*>(&vMetals[i]->sprite));
 	}
-        
+
 }

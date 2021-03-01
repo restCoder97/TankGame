@@ -14,7 +14,7 @@ class Game
 	RenderWindow*gameWindow;
 	Event event;
 	Tank*playerTank;
-	Tank*player2Tank;
+	AITank*player2Tank;
 	BLineEdit aEdit = BLineEdit(BPoint(100, 100), "Hello World!");
 	//GameMap gameMap;
 	std::thread*flyThread = nullptr;// execute Bullets' move

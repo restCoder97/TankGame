@@ -68,7 +68,7 @@ public:
 		pt.y = this->y + b.y;
 		return pt;
 	}
-	
+
 	BPoint move(int mX, int mY) {// taking move amount, move the point and return the point after moving
 		return BPoint(x + mX, y + mY);
 	}
@@ -88,13 +88,13 @@ public:
 // over-write Sprite function to suit our game
 class BSprite :public Sprite {
 
-	BSize spSize;// sprite size
 	direction dic;//current direction
 	Texture*BTexture = nullptr;// texture
 	Mutex mMutex;
 
 public:
 
+	BSize spSize;// sprite size
 
 	Texture* getBTexture() {
 		return BTexture;
@@ -326,7 +326,7 @@ public:
 };
 
 class BLineEdit:public RectangleShape {
-	
+
 	Color colorText;
 	Color colorBackground;
 	bool isFocusing=false;
@@ -372,7 +372,7 @@ public:
 			}
 		}
 	}
-	
+
 
 	//Credit prof Bently
 	char getKey()

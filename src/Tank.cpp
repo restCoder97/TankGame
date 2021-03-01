@@ -235,5 +235,18 @@ Tank::~Tank() {
 //decide where to go
 //go there;
 void AITank::think(){
-	std::cout << "thot"<< std::endl;
+	//std::cout << "thot"<< std::endl;
+
+
+	int eX = enemy->getPtMouth().x;
+	int eY = enemy->getPtMouth().y;
+
+	//int eX = enemy->((int)(getPtMouth().x)), eY = enemy->((int)(getPtMouth().y));
+	if(eX > ((int)(getPtMouth().x))) switchDirection(direction::right);
+	else if(eX < ((int)(getPtMouth().x))) switchDirection(direction::left);
+	else if(eY > ((int)(getPtMouth().y))) switchDirection(direction::bot);
+	else if(eY < ((int)(getPtMouth().y))) switchDirection(direction::top);
+	move();
+	fire(*bList);
+
 }

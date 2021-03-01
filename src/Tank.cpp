@@ -237,8 +237,8 @@ Tank::~Tank() {
 void AITank::think(){
 
 
-	//think only on a tile centre
 	/*
+	//think only on a tile centre
 	if( ((int)(getPtMouth().x)) % 20 != 10 && ((int)(getPtMouth().y)) % 20 != 10)
 		return;
 	std::cout << "thot"<< std::endl;
@@ -256,29 +256,52 @@ void AITank::think(){
 						<< " qY = " << qY << std::endl;
 	*/
 
-	std::cout << surroundings->potField.size() << std::endl;
+
+
+	//std::cout << surroundings->potField.size() << std::endl;
+
+	bool goL = true, goR = true, goT = true, goB = true;
+
+	if(qX == surroundings->gridLength || surroundings->potField[qX+1][qY]) goB = false;
+	if(qX == 0 || surroundings->potField[qX-1][qY] ) goT = false;
+	if(qY == surroundings->gridLength || surroundings->potField[qX][qY+1]) goR = false;
+	if(qY == 0 || surroundings->potField[qX][qY-1]) goL = false;
+
+
+
+	std::cout << "L:" << goL << " R:" << goR << "T:" << goT << " B:" << goB << std::endl;
+
+
+
 
 	if(std::abs(dX) > (getSpTank()->spSize.width)){ //prefer X
-		if(dX > 0 && surroundings->potField[(int)qX+1][(int)qY] != 2){
+		if(dX > 0 && goR){
 			switchDirection(direction::right);
 
 			if(surroundings->potField[(int)qX+1][(int)qY] == 1)
 				fire(*bList);
 
 		}
-		else{
+		else if (goL){
 			switchDirection(direction::left);
-
-			/*
-			if(surroundings->potField[qX-1][qY] == 1)
+			if(surroundings->potField[(int)qX-1][(int)qY] == 1)
 				fire(*bList);
-			*/
-
 		}
 	}
 	else{
-		if(dY > 0) switchDirection(direction::bot);
-		else switchDirection(direction::top);
+		if(dY > 0 && goB){
+			switchDirection(direction::bot);
+			if(surroundings->potField[(int)qX][(int)qY-1] == 1)
+				fire(*bList);
+
+
+		}
+		else{
+			switchDirection(direction::top);
+			if(surroundings->potField[(int)qX][(int)qY+1] == 1)
+				fire(*bList);
+
+		}
 
 	}
 	move();

@@ -153,8 +153,10 @@ void Tank::fire(std::vector<Bullet*>&bList) {// shooting
 		aBullet = new Bullet(getPtMouth(), tankFace,20);
 	else
 		aBullet = new Bullet(getPtMouth(), tankFace);
+	/*
 	if (storedBonus.size() == 0||storedBonus.top()->getId() != 4)
 		nBullets--;
+	*/
 	bList.push_back(aBullet);// add a bullet to the game
 	sdFire->play();
 	fireFrequenceClock.restart();
@@ -162,11 +164,13 @@ void Tank::fire(std::vector<Bullet*>&bList) {// shooting
 
 // get damage
 void Tank::damaged(int damage) {
+	//std::cout << "oof" << std::endl;
 	if(storedBonus.size() == 0)
 		nHp -= damage;
 	if(storedBonus.size() != 0 && storedBonus.top()->getId() != 0 )
 		nHp -= damage;
 	if (nHp <= 0) {
+		std::cout << "i am die\n";
 		stop();
 		sdExplosion->play();
 	}
@@ -222,6 +226,8 @@ void Tank::stop(bool hittedWall) {
 
 
 Tank::~Tank() {
+	//GIF*aGif = new GIF(strExplosion, getSpTank()->getCenterPoint());
+
 	if (spTank)
 		delete spTank;
 	if (sdFire)
@@ -240,8 +246,9 @@ void AITank::think(bool force){ //the 'force' means to force change dir
 	std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
 	std::chrono::duration<double> dt = now - lastThought; //dt is in seconds
 
+	//we change dir if we haven't changed in a second, or if we're forced to
 	if(dt.count() > 1 || force){
-		std::cout << dt.count() << std::endl;
+		//std::cout << dt.count() << std::endl;
 		lastThought = now;
 
 		int g;
@@ -271,7 +278,7 @@ void AITank::think(bool force){ //the 'force' means to force change dir
 
 		g = rand() % 10;
 		if(g == 1)
-			fire(*bList); //yes fire at each think(). stupid, but testing
+			fire(*bList); //yes fire at 10% chance each think(). stupid, but testing
 
 
 	}

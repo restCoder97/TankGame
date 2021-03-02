@@ -14,7 +14,7 @@ class Game
 	RenderWindow*gameWindow;
 	Event event;
 	Tank*playerTank;
-	AITank*player2Tank;
+	std::vector<AITank*> player2Tanks;
 	BLineEdit aEdit = BLineEdit(BPoint(100, 100), "Hello World!");
 	//GameMap gameMap;
 	std::thread*flyThread = nullptr;// execute Bullets' move
@@ -23,9 +23,10 @@ class Game
 	bool gameOver = false;
 	BText gameOverText;
 	BText tank1Hp;
-	BText tank2Hp;
-	BText lblP1Score, lblP2Score;
-	BText tank2Bullet, tank1Bullet;
+	//BText tank2Hp;
+	BText lblP1Score; //, lblP2Score;
+	//BText tank2Bullet,
+	BText tank1Bullet;
 
 	BText pauseText;
 	RectangleShape pauseView;

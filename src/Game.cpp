@@ -57,20 +57,20 @@ void Game::CheckKeyboard() {// come to here if keyboard pressed
 	if (gamePause||gameOver)
 		return;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
-		player2Tank->switchDirection(direction::top);
-		player2Tank->move();
+		playerTank->switchDirection(direction::top);
+		playerTank->move();
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::S)) {
-		player2Tank->switchDirection(direction::bot);
-		player2Tank->move();
+		playerTank->switchDirection(direction::bot);
+		playerTank->move();
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::A)) {
-		player2Tank->switchDirection(direction::left);
-		player2Tank->move();
+		playerTank->switchDirection(direction::left);
+		playerTank->move();
 	}
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::D)) {
-		player2Tank->switchDirection(direction::right);
-		player2Tank->move();
+		playerTank->switchDirection(direction::right);
+		playerTank->move();
 	}
 	if (sf::Keyboard::isKeyPressed(Keyboard::Key::Up)) {
 		playerTank->switchDirection(direction::top);
@@ -100,7 +100,10 @@ void Game::KeyboardDown(Event event, bool keyboard) {//come to here when keyboar
 		gamePause = !gamePause;
 	if (gamePause|| gameOver) {
 		playerTank->stop();
-		player2Tank->stop();
+
+		for(AITank* player2Tank: player2Tanks)
+			player2Tank->stop();
+
 		return;
 	}
 
@@ -117,29 +120,29 @@ void Game::KeyboardDown(Event event, bool keyboard) {//come to here when keyboar
 	auto axispt2 = Joystick::getAxisPosition(1, Joystick::Z);
 
 	if (axispt2 > -2 && player == 1 && keyboard == false)
-		player2Tank->stop();
+		playerTank->stop();
 	if (joystick == Joystick::Z && player == 1 && axispt2 <= -5 && keyboard == false)
-		player2Tank->move();
+		playerTank->move();
 
 	if (keyID == 0x16 || (player == 1 && joystick == Joystick::Y && pt == -100)) {
-		player2Tank->switchDirection(direction::top);
+		playerTank->switchDirection(direction::top);
 		if (player != 1)
-			player2Tank->move();
+			playerTank->move();
 	}
 	else if (keyID == 0x12 || (player == 1 && joystick == Joystick::Y && pt == 100)) {
-		player2Tank->switchDirection(direction::bot);
+		playerTank->switchDirection(direction::bot);
 		if (player != 1)
-			player2Tank->move();
+			playerTank->move();
 	}
 	else if ((keyID == 0 && keyboard) || (player == 1 && joystick == Joystick::X && pt == -100)) {
-		player2Tank->switchDirection(direction::left);
+		playerTank->switchDirection(direction::left);
 		if (player != 1)
-			player2Tank->move();
+			playerTank->move();
 	}
 	else if (keyID == 0x3 || (player == 1 && joystick == Joystick::X && pt == 100)) {
-		player2Tank->switchDirection(direction::right);
+		playerTank->switchDirection(direction::right);
 		if (player != 1)
-			player2Tank->move();
+			playerTank->move();
 	}
 
 	if (a == Keyboard::Key::Up || (player == 0 && joystick == Joystick::Y && pt == -100)) {
@@ -170,8 +173,8 @@ void Game::KeyboardDown(Event event, bool keyboard) {//come to here when keyboar
 void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 	Keyboard::Key aKey = event.key.code;
 	if (event.joystickButton.joystickId == 1 && event.joystickButton.button == 2) {
-		player2Tank->addBullet((unsigned int)(player2Tank->getScore() / 5));
-		player2Tank->setScore((unsigned int)(player2Tank->getScore() % 5));
+		playerTank->addBullet((unsigned int)(5));
+		playerTank->setScore((unsigned int)(5));
 	}
 
 	if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 2) {
@@ -181,8 +184,8 @@ void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 
 
 	if (aKey == Keyboard::LShift) {
-		player2Tank->addBullet((unsigned int)(playerTank->getScore() / 5));
-		player2Tank->setScore((unsigned int)(playerTank->getScore() % 5));
+		playerTank->addBullet((unsigned int)(playerTank->getScore() / 5));
+		playerTank->setScore((unsigned int)(playerTank->getScore() % 5));
 	}
 
 	if (aKey == Keyboard::RShift) {
@@ -192,12 +195,12 @@ void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 
 
 	if (event.joystickButton.joystickId == 1 && event.joystickButton.button == 1)
-		player2Tank->fire(bulletList);
+		playerTank->fire(bulletList);
 	if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 1)
 		playerTank->fire(bulletList);
 
 	else if (aKey == sf::Keyboard::W || aKey == sf::Keyboard::S || aKey == sf::Keyboard::A || aKey == sf::Keyboard::D) {
-		player2Tank->stop();
+		playerTank->stop();
 		CheckKeyboard();
 	}
 	else if (aKey == sf::Keyboard::Up || aKey == sf::Keyboard::Down || aKey == sf::Keyboard::Left || aKey == sf::Keyboard::Right) {
@@ -205,7 +208,7 @@ void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 		CheckKeyboard();
 	}
 	if (aKey == sf::Keyboard::Space) {
-		player2Tank->fire(bulletList);
+		playerTank->fire(bulletList);
 	}
 	if (aKey == sf::Keyboard::RControl) {
 		playerTank->fire(bulletList);
@@ -214,33 +217,40 @@ void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 
 
 void Game::checkBullets() {// traverse bullet list, check bullets' position, if out of screen then delete it.
+	Bullet* tmp;
 	for (unsigned int i = 0; i < bulletList.size(); i++) {
-		BPoint bulletPeak = bulletList[i]->getPeekPoint();
+		tmp = bulletList[i];
+		BPoint bulletPeak = tmp->getPeekPoint();
 		if (bulletPeak.x > 1000 || bulletPeak.y >= 1000 || bulletPeak.x <= 0 || bulletPeak.y <= 0) {
-			Bullet * tmp = bulletList[i];
+			//Bullet * tmp = bulletList[i];
 			bulletList.erase(bulletList.begin() + i);
-			delete tmp;
+			//delete tmp;
 		}
 		else if (playerTank->isContainItems(bulletPeak)) {
-			Bullet * tmp = bulletList[i];
+			//Bullet * tmp = bulletList[i];
 			bulletList.erase(bulletList.begin() + i);
 			playerTank->damaged(tmp->nDamage);
-			player2Tank->addScore(15);
-			delete tmp;
+			//player2Tank->addScore(15);
+			//delete tmp;
 		}
-		else if (player2Tank->isContainItems(bulletPeak)) {
-			Bullet * tmp = bulletList[i];
-			bulletList.erase(bulletList.begin() + i);
-			player2Tank->damaged(tmp->nDamage);
-			playerTank->addScore(15);
-			delete tmp;
+		else if (player2Tanks.size()) {
+			for(AITank* player2Tank: player2Tanks){
+				//Bullet * tmp = bulletList[i];
+				if(player2Tank->isContainItems(bulletPeak)){
+					bulletList.erase(bulletList.begin() + i);
+					player2Tank->damaged(tmp->nDamage);
+					playerTank->addScore(15);
+					delete tmp;
+
+				}
+			}
 		}
 		else {
 			for (int j = 0; j < gameMap->vBricks.size(); j++) {
 				if (gameMap->vBricks[j]->sprite.isContaining(bulletPeak)) {
 					GIF*aGif = new GIF(strExplosion, gameMap->vBricks[j]->sprite.getCenterPoint());
 					boomGifs.push_back(aGif);
-					Bullet*tmp = bulletList[i];
+					//Bullet*tmp = bulletList[i];
 					Brick*abrk = gameMap->vBricks[j];
 					bulletList.erase(bulletList.begin() + i);
 					delete tmp;
@@ -252,7 +262,7 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 			for (int k = 0; k < gameMap->vMetals.size(); k++) {
 				if (gameMap->vMetals[k]->sprite.isContaining(bulletPeak)) {
 					if (i < bulletList.size()) {
-						Bullet*tmp = bulletList[i];
+						//Bullet*tmp = bulletList[i];
 						bulletList.erase(bulletList.begin() + i);
 						delete tmp;
 					}
@@ -293,7 +303,8 @@ void Game::update() {// re-painting game board with new dates.
 	gameMap->paint(gameWindow);
 
 	gameWindow->draw(playerTank->getSpTank()->getSprite());// draw tank
-	gameWindow->draw(player2Tank->getSpTank()->getSprite());// draw tank
+	for(AITank* player2Tank : player2Tanks)
+		gameWindow->draw(player2Tank->getSpTank()->getSprite());// draw tank
 	mMutexExplosion.lock();
 	for (int i = 0; i < boomGifs.size(); i++) {
 		gameWindow->draw(boomGifs[i]->sp->getSprite());
@@ -316,14 +327,16 @@ void Game::update() {// re-painting game board with new dates.
 	}*/
 	gameWindow->draw(dashBoard);
 	gameWindow->draw(tank1Hp.getText());
-	gameWindow->draw(tank2Hp.getText());
+	//gameWindow->draw(tank2Hp.getText());
 	//coin draw
+	/*
 	if (player2Tank->storedBonus.size() != 0) {
 		int a = player2Tank->storedBonus.top()->getId();
 		String b = to_string(a);
 		BText tx = BText(b, Color::Red, BPoint(100, 100), MyFont);
 		gameWindow->draw(tx.getText());
 	}
+	*/
 
 	for (Bonus*tmp : BonusList) {
 		gameWindow->draw(tmp->getSprite());
@@ -332,9 +345,9 @@ void Game::update() {// re-painting game board with new dates.
 
 	//score counter draw
 	gameWindow->draw(lblP1Score.getText());
-	gameWindow->draw(lblP2Score.getText());
+	//gameWindow->draw(lblP2Score.getText());
 	gameWindow->draw(tank1Bullet.getText());
-	gameWindow->draw(tank2Bullet.getText());
+	//gameWindow->draw(tank2Bullet.getText());
 
 
 
@@ -363,8 +376,8 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 	}
 
 
-	else if (player2Tank->getHp() <= 0) {
-		deadTank = player2Tank;
+	else if (player2Tanks.size() == 0) {
+		//deadTank = player2Tank;
 		gameOverText.setString("Green Tank Win");
 		gameOverText.setFillColor(Color::Green);
 		gameOver = true;
@@ -373,24 +386,31 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 		}
 	}
 
-
-	vector<BPoint>tmp2 = player2Tank->getFrontPoints();
-	if(playerTank->isContainItems(player2Tank->getPtMouth(),&tmp2)||player2Tank->outOfScreen())
-	{
-		player2Tank->think(true);
+	for(AITank* player2Tank: player2Tanks){
+		vector<BPoint>tmp2 = player2Tank->getFrontPoints();
+		if(playerTank->isContainItems(player2Tank->getPtMouth(),&tmp2)||player2Tank->outOfScreen())
+		{
+			player2Tank->think(true);
+		}
 	}
 
-
 	vector<BPoint>tmp1 = playerTank->getFrontPoints();
-	if (player2Tank->isContainItems(playerTank->getPtMouth(),&tmp1) || playerTank->outOfScreen()){
-		playerTank->stop(true);
+	for(AITank* player2Tank: player2Tanks){
+		if (player2Tank->isContainItems(playerTank->getPtMouth(),&tmp1) || playerTank->outOfScreen()){
+			playerTank->stop(true);
+		}
 	}
 
 	for (int i = 0; i < gameMap->vBricks.size(); i++) {
 		if (gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(),&tmp1))
 			playerTank->stop(true);
-		if (gameMap->vBricks[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
-			player2Tank->think(true);
+
+
+		for(AITank* player2Tank: player2Tanks){
+			vector<BPoint>tmp2 = player2Tank->getFrontPoints();
+			if (gameMap->vBricks[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
+				player2Tank->think(true);
+			}
 	}
 
 
@@ -398,8 +418,11 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 	for (int i = 0; i < gameMap->vMetals.size(); i++) {
 		if (gameMap->vMetals[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
 			playerTank->stop(true);
-		if (gameMap->vMetals[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
-			player2Tank->think(true);
+		for(AITank* player2Tank: player2Tanks){
+			vector<BPoint>tmp2 = player2Tank->getFrontPoints();
+			if (gameMap->vMetals[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
+				player2Tank->think(true);
+		}
 	}
 	for (int i = 0; i < BonusList.size(); i++) {
 		if (BonusList[i]->isContaining(playerTank->getPtMouth(), &tmp1)) {
@@ -409,18 +432,22 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 
 	}
 	for (int i = 0; i < BonusList.size();i++) {
-		if (BonusList[i]->isContaining(player2Tank->getPtMouth(), &tmp1)) {
-			player2Tank->eat(BonusList[i]);
-			BonusList.erase(BonusList.begin() + i);
+		for(AITank* player2Tank: player2Tanks){
+			if (BonusList[i]->isContaining(player2Tank->getPtMouth(), &tmp1)) {
+				player2Tank->eat(BonusList[i]);
+				BonusList.erase(BonusList.begin() + i);
+			}
 		}
 	}
-	player2Tank->checkingBonus();
+	//player2Tank->checkingBonus();
 	playerTank->checkingBonus();
 
 	if (gameOver) {
-		player2Tank->stop();
 		playerTank->stop();
-		player2Tank->setGameOver();
+		for(AITank* player2Tank: player2Tanks){
+			player2Tank->setGameOver();
+			player2Tank->stop();
+		}
 		playerTank->setGameOver();
 		animateThread = new std::thread(&Game::playBoom, this);
 	}
@@ -429,24 +456,24 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 	ssScoreP1.str(""); //refresh score label
 	ssScoreP2.str("");
 	ssScoreP1 << " Pts: " << playerTank->getScore();
-	ssScoreP2 << " Pts: " << player2Tank->getScore();
+	//ssScoreP2 << " Pts: " << player2Tank->getScore();
 	lblP1Score = BText(ssScoreP1.str(), Color::Green, BPoint(1000, 35),MyFont);
-	lblP2Score = BText(ssScoreP2.str(), Color::Red, BPoint(1000, 935),MyFont);
+	//lblP2Score = BText(ssScoreP2.str(), Color::Red, BPoint(1000, 935),MyFont);
 
 
 	std::ostringstream str1HP, str2Hp;
 	std::string hp = " Hp: ";
 	str1HP << hp << playerTank->getHp();
-	str2Hp << hp << player2Tank->getHp();
+	//str2Hp << hp << player2Tank->getHp();
 	tank1Hp.setString(str1HP.str());
-	tank2Hp.setString(str2Hp.str());
+	//tank2Hp.setString(str2Hp.str());
 
 	std::ostringstream str1Bullet, str2Bullet;
 	std::string Ammo = " Ammo: ";
 	str1Bullet << Ammo << playerTank->getBulletAmount();
-	str2Bullet << Ammo << player2Tank->getBulletAmount();
+	//str2Bullet << Ammo << player2Tank->getBulletAmount();
 	tank1Bullet = BText(str1Bullet.str(), Color::Green, BPoint(1000, 65), MyFont);
-	tank2Bullet = BText(str2Bullet.str(), Color::Red, BPoint(1000, 965), MyFont);
+	//tank2Bullet = BText(str2Bullet.str(), Color::Red, BPoint(1000, 965), MyFont);
 
 }
 
@@ -458,7 +485,14 @@ Game::Game() {
 	GIFThread = new std::thread(&Game::playExplosion, this);
 	gameMap = new GameMap();
 	playerTank = new Tank(BPoint(500, 900), direction::top, BSize(50, 50), Color(100, 255, 100, 255));//init player Tank color:r,g,b,a
-	player2Tank = new AITank(BPoint(500, 100), direction::bot, BSize(50, 50), Color(255, 100, 100, 255), playerTank,  gameMap, &bulletList);
+	//player2Tank = new AITank(BPoint(500, 100), direction::bot, BSize(50, 50), Color(255, 100, 100, 255), playerTank,  gameMap, &bulletList);
+	player2Tanks.push_back(new AITank(BPoint(500, 100), direction::bot, BSize(50, 50), Color(255, 100, 100, 255), playerTank,  gameMap, &bulletList));
+	player2Tanks.push_back(new AITank(BPoint(100, 100), direction::bot, BSize(50, 50), Color(255, 100, 100, 255), playerTank,  gameMap, &bulletList));
+	player2Tanks.push_back(new AITank(BPoint(500, 500), direction::bot, BSize(50, 50), Color(255, 100, 100, 255), playerTank,  gameMap, &bulletList));
+	player2Tanks.push_back(new AITank(BPoint(800, 800), direction::bot, BSize(50, 50), Color(255, 100, 100, 255), playerTank,  gameMap, &bulletList));
+
+
+
 	FloatRect gameRect = FloatRect(0, 0, 1000, 1000);
 	pauseView= RectangleShape(Vector2f(1000, 1000));
 	pauseView.setPosition(Vector2f(0, 0));
@@ -514,7 +548,7 @@ Game::Game() {
 	dashBoard.setPosition(1000, 0);
 
 	tank1Hp = BText("", Color::Green, BPoint(1000, 0),MyFont,35);
-	tank2Hp = BText("", Color::Red, BPoint(1000, 900), MyFont,35);
+	//tank2Hp = BText("", Color::Red, BPoint(1000, 900), MyFont,35);
 	gameOverText = BText("", Color::Yellow, BPoint(0, 0), MyFont, 50);
 	gameOverText.GoCenter(gameRect);
 
@@ -549,7 +583,9 @@ void Game::play() { // call this function to start playing
 				GenerateBonus();
 			}
 
-			player2Tank->think();
+			//player2Tank->think();
+			for(AITank* player2Tank: player2Tanks)
+				player2Tank->think();
 
 		}
 		else {
@@ -589,7 +625,9 @@ Game::~Game() {
 	while (!boomPlayed) {
 		sleep(milliseconds(10));
 	}
-	if (player2Tank)
+
+
+	for(AITank* player2Tank: player2Tanks)
 		delete player2Tank;
 	if (playerTank)
 		delete playerTank;

@@ -219,19 +219,22 @@ void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 void Game::checkBullets() {// traverse bullet list, check bullets' position, if out of screen then delete it.
 	Bullet* tmp;
 	BPoint bulletPeak;
-	for (unsigned int i = 0; i < bulletList.size(); i++) {
+	bool stop = false;
+	for (unsigned int i = 0; i < bulletList.size() && !stop; i++) {
 		tmp = bulletList[i];
 		bulletPeak = tmp->getPeekPoint();
 		if (bulletPeak.x > 1000 || bulletPeak.y >= 1000 || bulletPeak.x <= 0 || bulletPeak.y <= 0) {
 			//Bullet * tmp = bulletList[i];
 			bulletList.erase(bulletList.begin() + i);
 			delete tmp;
+			stop = true;
 		}
 		else if (playerTank->isContainItems(bulletPeak)) {
 			//Bullet * tmp = bulletList[i];
 			bulletList.erase(bulletList.begin() + i);
 			playerTank->damaged(tmp->nDamage);
 			//player2Tank->addScore(15);
+			stop = true;
 			delete tmp;
 		}
 		else if (player2Tanks.size()) {
@@ -242,13 +245,15 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 					player2Tank->damaged(tmp->nDamage);
 					playerTank->addScore(15);
 					delete tmp;
+					stop = true;
+					break;
 
 				}
 			}
 		}
 
-		else {
-			for (int j = 0; j < gameMap->vBricks.size(); j++) {
+		if(!stop){
+			for (int j = 0; j < gameMap->vBricks.size() && !stop; j++) {
 				if (gameMap->vBricks[j]->sprite.isContaining(bulletPeak)) {
 					GIF*aGif = new GIF(strExplosion, gameMap->vBricks[j]->sprite.getCenterPoint());
 					boomGifs.push_back(aGif);
@@ -256,17 +261,19 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 					Brick*abrk = gameMap->vBricks[j];
 					bulletList.erase(bulletList.begin() + i);
 					delete tmp;
+					stop = true;
 					gameMap->vBricks.erase(gameMap->vBricks.begin() + j);
-					std::cout << "brick broke\n";
+					//std::cout << "brick broke\n";
 					delete abrk;
 				}
 			}
 
-			for (int k = 0; k < gameMap->vMetals.size(); k++) {
+			for (int k = 0; k < gameMap->vMetals.size() && !stop; k++) {
 				if (gameMap->vMetals[k]->sprite.isContaining(bulletPeak)) {
 						//Bullet*tmp = bulletList[i];
 					bulletList.erase(bulletList.begin() + i);
 					delete tmp;
+					stop = true;
 
 				}
 			}

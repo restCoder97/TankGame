@@ -241,8 +241,9 @@ void AITank::think(bool force){ //the 'force' means to force change dir
 	std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
 	std::chrono::duration<double> dt = now - lastThought; //dt is in seconds
 
+	//we change dir if we haven't changed in a second, or if we're forced to
 	if(dt.count() > 1 || force){
-		std::cout << dt.count() << std::endl;
+		//std::cout << dt.count() << std::endl;
 		lastThought = now;
 
 		int g;

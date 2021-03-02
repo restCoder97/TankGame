@@ -233,6 +233,7 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 			//Bullet * tmp = bulletList[i];
 			bulletList.erase(bulletList.begin() + i);
 			playerTank->damaged(tmp->nDamage);
+
 			//player2Tank->addScore(15);
 			stop = true;
 			delete tmp;
@@ -243,6 +244,10 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 				if(player2Tank->isContainItems(bulletPeak)){
 					bulletList.erase(bulletList.begin() + i);
 					player2Tank->damaged(tmp->nDamage);
+					if(player2Tank->getHp() <= 0){
+						GIF*aGif = new GIF(strExplosion, player2Tank->getSpTank()->getCenterPoint());
+						boomGifs.push_back(aGif);
+					}
 					playerTank->addScore(15);
 					delete tmp;
 					stop = true;
@@ -382,8 +387,6 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			sleep(milliseconds(10));
 		}
 	}
-
-
 	else if (player2Tanks.size() == 0) {
 		//deadTank = player2Tank;
 		gameOverText.setString("Green Tank Win");
@@ -393,6 +396,18 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			sleep(milliseconds(10));
 		}
 	}
+
+	AITank* player2Tank;
+	for(int i = 0; i < player2Tanks.size(); i++){
+		player2Tank = player2Tanks[i];
+		if(player2Tank->getHp() <= 0){
+			deadTank = player2Tank;
+			player2Tanks.erase(player2Tanks.begin() + i);
+			delete deadTank;
+
+		}
+	}
+	
 
 	for(AITank* player2Tank: player2Tanks){
 		vector<BPoint>tmp2 = player2Tank->getFrontPoints();

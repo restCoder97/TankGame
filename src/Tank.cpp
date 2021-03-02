@@ -153,8 +153,10 @@ void Tank::fire(std::vector<Bullet*>&bList) {// shooting
 		aBullet = new Bullet(getPtMouth(), tankFace,20);
 	else
 		aBullet = new Bullet(getPtMouth(), tankFace);
+	/*
 	if (storedBonus.size() == 0||storedBonus.top()->getId() != 4)
 		nBullets--;
+	*/
 	bList.push_back(aBullet);// add a bullet to the game
 	sdFire->play();
 	fireFrequenceClock.restart();
@@ -162,12 +164,13 @@ void Tank::fire(std::vector<Bullet*>&bList) {// shooting
 
 // get damage
 void Tank::damaged(int damage) {
-	std::cout << "oof" << std::endl;
+	//std::cout << "oof" << std::endl;
 	if(storedBonus.size() == 0)
 		nHp -= damage;
 	if(storedBonus.size() != 0 && storedBonus.top()->getId() != 0 )
 		nHp -= damage;
 	if (nHp <= 0) {
+		std::cout << "i am die\n";
 		stop();
 		sdExplosion->play();
 	}
@@ -223,6 +226,8 @@ void Tank::stop(bool hittedWall) {
 
 
 Tank::~Tank() {
+	//GIF*aGif = new GIF(strExplosion, getSpTank()->getCenterPoint());
+
 	if (spTank)
 		delete spTank;
 	if (sdFire)

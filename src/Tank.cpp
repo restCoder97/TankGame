@@ -162,6 +162,7 @@ void Tank::fire(std::vector<Bullet*>&bList) {// shooting
 
 // get damage
 void Tank::damaged(int damage) {
+	std::cout << "oof" << std::endl;
 	if(storedBonus.size() == 0)
 		nHp -= damage;
 	if(storedBonus.size() != 0 && storedBonus.top()->getId() != 0 )
@@ -271,7 +272,7 @@ void AITank::think(bool force){ //the 'force' means to force change dir
 
 		g = rand() % 10;
 		if(g == 1)
-			fire(*bList); //yes fire at each think(). stupid, but testing
+			fire(*bList); //yes fire at 10% chance each think(). stupid, but testing
 
 
 	}

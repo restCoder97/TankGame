@@ -218,20 +218,21 @@ void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 
 void Game::checkBullets() {// traverse bullet list, check bullets' position, if out of screen then delete it.
 	Bullet* tmp;
+	BPoint bulletPeak;
 	for (unsigned int i = 0; i < bulletList.size(); i++) {
 		tmp = bulletList[i];
-		BPoint bulletPeak = tmp->getPeekPoint();
+		bulletPeak = tmp->getPeekPoint();
 		if (bulletPeak.x > 1000 || bulletPeak.y >= 1000 || bulletPeak.x <= 0 || bulletPeak.y <= 0) {
 			//Bullet * tmp = bulletList[i];
 			bulletList.erase(bulletList.begin() + i);
-			//delete tmp;
+			delete tmp;
 		}
 		else if (playerTank->isContainItems(bulletPeak)) {
 			//Bullet * tmp = bulletList[i];
 			bulletList.erase(bulletList.begin() + i);
 			playerTank->damaged(tmp->nDamage);
 			//player2Tank->addScore(15);
-			//delete tmp;
+			delete tmp;
 		}
 		else if (player2Tanks.size()) {
 			for(AITank* player2Tank: player2Tanks){
@@ -245,6 +246,7 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 				}
 			}
 		}
+
 		else {
 			for (int j = 0; j < gameMap->vBricks.size(); j++) {
 				if (gameMap->vBricks[j]->sprite.isContaining(bulletPeak)) {
@@ -255,17 +257,16 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 					bulletList.erase(bulletList.begin() + i);
 					delete tmp;
 					gameMap->vBricks.erase(gameMap->vBricks.begin() + j);
+					std::cout << "brick broke\n";
 					delete abrk;
 				}
 			}
 
 			for (int k = 0; k < gameMap->vMetals.size(); k++) {
 				if (gameMap->vMetals[k]->sprite.isContaining(bulletPeak)) {
-					if (i < bulletList.size()) {
 						//Bullet*tmp = bulletList[i];
-						bulletList.erase(bulletList.begin() + i);
-						delete tmp;
-					}
+					bulletList.erase(bulletList.begin() + i);
+					delete tmp;
 
 				}
 			}

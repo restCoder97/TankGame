@@ -196,7 +196,7 @@ public:
 		dic = newDic;
 	}
 
-	bool isContaining(const BPoint & pt, const std::vector<BPoint>*pts= nullptr) {
+	bool isContaining(const BPoint  pt, const std::vector<BPoint>*pts= nullptr) {
 		if ( getGlobalBounds().contains(pt.getV2f()))
 			return true;
 		else if(pts){

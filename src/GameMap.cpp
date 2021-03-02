@@ -33,7 +33,7 @@ void GameMap::setUpTiles()
 				if(aBrick->sprite.spSize.width){
 					qX = x / ((int)(aBrick->sprite.spSize.width));
 					qY = y / ((int)(aBrick->sprite.spSize.height));
-					potField[qX][qY] = 1; //
+					//potField[qX][qY] = 1; //
 				}
 
 
@@ -53,7 +53,7 @@ void GameMap::setUpTiles()
 				if(aMetal->sprite.spSize.width){
 					qX = x / ((int)(aMetal->sprite.spSize.width));
 					qY = y / ((int)(aMetal->sprite.spSize.height));
-					potField[qX][qY] = 2; //
+					//potField[qX][qY] = 2; //
 				}
 
 
@@ -63,11 +63,13 @@ void GameMap::setUpTiles()
 
 GameMap::GameMap(){
     gridLength = 20;
+		/*
 		vector<int> r(gridLength, 0);
 		for(int i = 0; i < gridLength; i++){
 			potField.push_back(r);
 		}
 		std::cout << potField.size() << " by " << potField[0].size() << std::endl;
+		*/
     setUpTiles();
 }
 

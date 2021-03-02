@@ -3,6 +3,8 @@
 #include <SFML/Audio.hpp>
 //#include<iostream>
 #include<algorithm>
+#include<cstdlib>
+
 
 void Tank::setGameOver() {
 	gameOver = true;
@@ -232,77 +234,46 @@ Tank::~Tank() {
 		delete sdMoving;
 }
 
-//decide where to go
-//go there;
-void AITank::think(){
 
+//pick a random direction to face. shoot
+void AITank::think(bool force){ //the 'force' means to force change dir
+	std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+	std::chrono::duration<double> dt = now - lastThought; //dt is in seconds
 
-	/*
-	//think only on a tile centre
-	if( ((int)(getPtMouth().x)) % 20 != 10 && ((int)(getPtMouth().y)) % 20 != 10)
-		return;
-	std::cout << "thot"<< std::endl;
-	*/
+	if(dt.count() > 1 || force){
+		std::cout << dt.count() << std::endl;
+		lastThought = now;
 
+		int g;
+		direction next = tankFace;
+		while(next == tankFace){
+			g = rand() % 4;
+			switch(g){
+				case 0:
+					next = direction::top;
+					break;
+				case 1:
+					next = direction::right;
+					break;
+				case 2:
+					next = direction::left;
+					break;
+				case 3:
+					next = direction::bot;
+					break;
 
-	int dX = enemy->getPtMouth().x - ((int)(getPtMouth().x));
-	int dY = enemy->getPtMouth().y - ((int)(getPtMouth().y));
-	int qX = (getPtMouth().x)/(getSpTank()->spSize.width);
-	int qY = (getPtMouth().y)/(getSpTank()->spSize.height);
-
-	/*
-	std::cout << "x:" << ((int)(getPtMouth().x)) << " y:" << ((int)(getPtMouth().y))
-						<< " qX = " << qX
-						<< " qY = " << qY << std::endl;
-	*/
-
-
-
-	//std::cout << surroundings->potField.size() << std::endl;
-
-	bool goL = true, goR = true, goT = true, goB = true;
-
-	if(qX == surroundings->gridLength || surroundings->potField[qX+1][qY]) goB = false;
-	if(qX == 0 || surroundings->potField[qX-1][qY] ) goT = false;
-	if(qY == surroundings->gridLength || surroundings->potField[qX][qY+1]) goR = false;
-	if(qY == 0 || surroundings->potField[qX][qY-1]) goL = false;
-
-
-
-	std::cout << "L:" << goL << " R:" << goR << "T:" << goT << " B:" << goB << std::endl;
-
-
-
-
-	if(std::abs(dX) > (getSpTank()->spSize.width)){ //prefer X
-		if(dX > 0 && goR){
-			switchDirection(direction::right);
-
-			if(surroundings->potField[(int)qX+1][(int)qY] == 1)
-				fire(*bList);
+			}
 
 		}
-		else if (goL){
-			switchDirection(direction::left);
-			if(surroundings->potField[(int)qX-1][(int)qY] == 1)
-				fire(*bList);
-		}
-	}
-	else{
-		if(dY > 0 && goB){
-			switchDirection(direction::bot);
-			if(surroundings->potField[(int)qX][(int)qY-1] == 1)
-				fire(*bList);
 
+		switchDirection(next);
+		move();
 
-		}
-		else{
-			switchDirection(direction::top);
-			if(surroundings->potField[(int)qX][(int)qY+1] == 1)
-				fire(*bList);
+		g = rand() % 10;
+		if(g == 1)
+			fire(*bList); //yes fire at each think(). stupid, but testing
 
-		}
 
 	}
-	move();
+
 }

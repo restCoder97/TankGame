@@ -377,7 +377,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 	vector<BPoint>tmp2 = player2Tank->getFrontPoints();
 	if(playerTank->isContainItems(player2Tank->getPtMouth(),&tmp2)||player2Tank->outOfScreen())
 	{
-		player2Tank->stop(true);
+		player2Tank->think(true);
 	}
 
 
@@ -390,7 +390,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 		if (gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(),&tmp1))
 			playerTank->stop(true);
 		if (gameMap->vBricks[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
-			player2Tank->stop(true);
+			player2Tank->think(true);
 	}
 
 
@@ -399,7 +399,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 		if (gameMap->vMetals[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
 			playerTank->stop(true);
 		if (gameMap->vMetals[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
-			player2Tank->stop(true);
+			player2Tank->think(true);
 	}
 	for (int i = 0; i < BonusList.size(); i++) {
 		if (BonusList[i]->isContaining(playerTank->getPtMouth(), &tmp1)) {

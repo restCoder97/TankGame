@@ -17,7 +17,7 @@ class GameMap
 
 
 public:
-    vector<vector<int>> potField; //which grid is brick(1), metal(2)
+    //vector<vector<int>> potField; //which grid is brick(1), metal(2)
     vector<Brick*> vBricks;
     vector<Metal*> vMetals;
     int gridLength;

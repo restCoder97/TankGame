@@ -3,7 +3,7 @@
 #include"Tank.h"
 #include<list>
 #include"GameMap.h"
-#include"AiTank.h"
+#include"AITank.h"
 #include"leaderBoard.h"
 //#include"GameMap.h"
 //#include "Bonus.h"

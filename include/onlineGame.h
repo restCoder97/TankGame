@@ -23,7 +23,7 @@ public:
 		threadRecive = new std::thread(&ServerGame::reciveData, this);
 		threadSend = new std::thread(&ServerGame::sendData, this);
 		gameWindow->setTitle("Server Game");
-		
+
 	}
 
 	void reciveData() {
@@ -37,7 +37,7 @@ public:
 			memcpy((char*)&data, strData, sizeof(TankData));
 			if (data.fire != 0)
 				player2Tank->fire(bulletList);
-			
+
 			player2Tank->getSpTank()->setCenterAt(BPoint(data.x, data.y));
 			player2Tank->setScore(data.score);
 			player2Tank->setBullets(data.bullet);
@@ -105,13 +105,13 @@ public:
 		Keyboard::Key aKey = event.key.code;
 
 		if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 2) {
-			playerTank->addBullet(unsigned int(playerTank->getScore() / 5));
-			playerTank->setScore(unsigned int(playerTank->getScore() % 5));
+			playerTank->addBullet((unsigned int)(playerTank->getScore() / 5));
+			playerTank->setScore((unsigned int)(playerTank->getScore() % 5));
 		}
 
 		if (aKey == Keyboard::LShift) {
-			playerTank->addBullet(unsigned int(playerTank->getScore() / 5));
-			playerTank->setScore(unsigned int(playerTank->getScore() % 5));
+			playerTank->addBullet((unsigned int)(playerTank->getScore() / 5));
+			playerTank->setScore((unsigned int)(playerTank->getScore() % 5));
 		}
 
 		if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 1) {
@@ -119,7 +119,7 @@ public:
 			char * tmp = playerTank->serilazationOut(true);
 			socket.send(tmp, sizeof(TankData));
 		}
-			
+
 
 		else if (aKey == sf::Keyboard::W || aKey == sf::Keyboard::S || aKey == sf::Keyboard::A || aKey == sf::Keyboard::D) {
 			playerTank->stop();
@@ -187,7 +187,7 @@ public:
 						mouseButtonDown(*event);
 					}
 				}
-				
+
 			}
 			else {
 				if (boomPlayed) {
@@ -197,7 +197,7 @@ public:
 			update();// re-painting
 		}
 	}
-	
+
 
 };
 
@@ -305,14 +305,14 @@ public:
 
 
 		if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 2) {
-			player2Tank->addBullet(unsigned int(playerTank->getScore() / 5));
-			player2Tank->setScore(unsigned int(playerTank->getScore() % 5));
+			player2Tank->addBullet((unsigned int)(playerTank->getScore() / 5));
+			player2Tank->setScore((unsigned int)(playerTank->getScore() % 5));
 		}
 
 
 		if (aKey == Keyboard::LShift) {
-			player2Tank->addBullet(unsigned int(player2Tank->getScore() / 5));
-			player2Tank->setScore(unsigned int(player2Tank->getScore() % 5));
+			player2Tank->addBullet((unsigned int)(player2Tank->getScore() / 5));
+			player2Tank->setScore((unsigned int)(player2Tank->getScore() % 5));
 		}
 
 		if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 1) {
@@ -373,5 +373,3 @@ public:
 		}
 	}
 };
-
-

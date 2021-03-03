@@ -415,6 +415,20 @@ SingleGame::SingleGame(std::string Name) {
 	AiTankList.push_back(new AITank(BPoint(800, 800), direction::bot, BSize(50, 50), Color(255, 100, 100, 255), playerTank, gameMap, &bulletList));
 
 
+	MyFont = new Font();
+	try{
+		MyFont->loadFromFile("fonts/font2.ttf");
+	}
+	catch(...){
+		std::cout << "font2 did not comply, attempting font1\n";
+		try{
+			MyFont->loadFromFile("fonts/font1.otf");
+		}
+		catch(...){
+			std::cerr << "Didn't work either\n";
+			std::exit(1);
+		}
+	}
 
 	FloatRect gameRect = FloatRect(0, 0, 1000, 1000);
 	pauseView = RectangleShape(Vector2f(1000, 1000));
@@ -460,12 +474,19 @@ SingleGame::SingleGame(std::string Name) {
 		}
 		boomTextures.push_back(tmp);
 	}
-	MyFont = new Font();
+
+	/*
 	if (!MyFont->loadFromFile("fonts/font2.ttf"))
 	{
-		std::cerr << "Could not load font " << "fonts/font2.ttf" << std::endl;
-		std::exit(1);
+		std::cout << "Could not load font " << "fonts/font2.ttf" << std::endl;
+		if(!MyFont->loadFromFile("fonts/font1.otf")){
+			std::cerr << "Font1 doesn't work either, full abort\n";
+			std::exit(1);
+		}
+		std::cout << "Using font1 instead\n";
 	}
+	*/
+
 
 	dashBoard.setFillColor(Color(125, 125, 125));
 	dashBoard.setPosition(1000, 0);
@@ -497,7 +518,7 @@ void SingleGame::play() { // call this function to start playing
 					gameOver = true;
 					gameWindow->close();
 				}
-					
+
 				if (event.type == sf::Event::EventType::KeyPressed || event.type == sf::Event::EventType::TextEntered)
 					KeyboardDown(event, true);
 				if (event.type == sf::Event::EventType::JoystickMoved)
@@ -598,7 +619,7 @@ SingleGame::~SingleGame() {
 	for (unsigned int i = 0; i < bulletList.size(); i++) {
 		delete bulletList[i];
 	}
-	
+
 	for (unsigned int i = 0; i < boomTextures.size() - 1; i++) {
 		if (boomTextures[i])
 			delete boomTextures[i];

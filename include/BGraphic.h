@@ -5,6 +5,7 @@
 #include <SFML/Audio.hpp>
 #include<string>
 #include<iostream>
+#include<cstring>
 using namespace sf;
 
 // Bill Chen's Graphic library
@@ -69,7 +70,7 @@ public:
 		pt.y = this->y + b.y;
 		return pt;
 	}
-	
+
 	BPoint move(int mX, int mY) {// taking move amount, move the point and return the point after moving
 		return BPoint(x + mX, y + mY);
 	}

@@ -2,9 +2,9 @@
 #include"Game.h";
 #include <SFML/Network.hpp>
 #include"onlineGame.h"
-#include <string> 
+#include <string>
 #include"SingleGame.h"
-#include"LeaderBoard.h"
+#include"leaderBoard.h"
 using namespace std::placeholders;
 class MainPage {
 	RenderWindow* windowInstance = new RenderWindow(VideoMode(319 + 471 + 273, 495), "Tank 2021");
@@ -19,6 +19,7 @@ class MainPage {
 	BSprite* middleSprite = new BSprite(texture2, BSize(471, 495), top, BPoint(650, 200));
 	BSprite* rightSprite = new BSprite(texture3, BSize(273, 495), top, BPoint(0, 0));
 	Font* test = new Font();
+
 	BText singlePlayer = BText("Single Player", Color::White, BPoint(50, 50), test);
 	FloatRect leftConfig = FloatRect(107.46 / 2, 84.19 / 2, 420 / 2, 39 / 2);
 	BLineEdit searchBox = BLineEdit(BPoint(50, 100), windowInstance, "Player Name");
@@ -38,6 +39,7 @@ class MainPage {
 	SButton create = SButton(BSize(149 / 2, 28 / 2), BPoint(1774 / 2, 661 / 2), Color::Transparent, "Create", windowInstance);
 public:
 	MainPage() {
+		test->loadFromFile("fonts/font2.ttf");
 		if (!texture.loadFromFile("images/t1.png")) {
 			cout << "Trial" << endl;
 		}
@@ -55,7 +57,6 @@ public:
 		leftSprite->setPosition(BPoint(0, 0));
 		middleSprite->setPosition(BPoint(320, 0));
 		rightSprite->setPosition(BPoint(792, 0));
-		test->loadFromFile("fonts//font2.ttf");
 		singlePlayer.setAlignment(leftConfig, topLeft);
 		play.setTextColor(Color(255, 255, 0, 255));
 		scores.setTextColor(Color(255, 255, 0, 255));
@@ -84,7 +85,7 @@ public:
 		portNumber.setFocus(pt, windowInstance, event);
 		portNumber2.setFocus(pt, windowInstance, event);
 
-		
+
 		auto callbackTank1 = std::bind(&MainPage::pbMultiPlayDown, this);//placeholders c++ 11
 		multiPlay.buttonDown(pt, callbackTank1);
 		auto callbackTank2 = std::bind(&MainPage::pbSinglePlayDown, this);//placeholders c++ 11
@@ -98,7 +99,7 @@ public:
 		auto callbackTank6 = std::bind(&MainPage::pbAboutUsDown, this);//placeholders c++ 11
 		aboutDeveloper.buttonDown(pt, callbackTank6);
 	}
-	
+
 	void pbSinglePlayDown() {
 		SingleGame aGame(searchBox.getTitle());
 		aGame.play();
@@ -116,8 +117,8 @@ public:
 		}
 		ClintGame aGame(ipAddress.getTitle(), port);
 		aGame.play();
-		
-	
+
+
 	}
 
 	void pbCreateDown() {
@@ -134,7 +135,7 @@ public:
 	}
 
 	void pbAboutUsDown() {
-		
+
 	}
 
 	void pbMultiPlayDown() {
@@ -157,7 +158,7 @@ public:
 			else if (portNumber.isFocusing)
 				portNumber.readInput(keyCode);
 		}
-		
+
 	}
 
 	void display() {
@@ -173,7 +174,7 @@ public:
 					keyboardDown(*event,false,true);
 				}
 
-				
+
 				if (event->type == sf::Event::EventType::MouseButtonPressed) {
 					mouseDown();
 				}

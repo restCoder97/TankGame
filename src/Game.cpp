@@ -4,7 +4,7 @@ using namespace sf;
 using namespace std;
 using namespace std::placeholders;
 
-	
+
 
 
 BonusType setType(int time=0) {
@@ -52,7 +52,7 @@ void Game::GenerateBonus() {
 	int x = rand()% 950;
 	aBonus->setCenterAt(BPoint(x, y));
 	BonusList.push_back(aBonus);
-	
+
 }
 
 void Game::CheckKeyboard() {// come to here if keyboard pressed
@@ -107,7 +107,7 @@ void Game::KeyboardDown(Event event, bool keyboard,bool textEnterd) {//come to h
 		if (cheatCode1.isFocusing&&textEnterd == false) {
 			cheatCode1.readInput(a, callbackTank1);
 		}
-			
+
 		else if (cheatCode2.isFocusing&&textEnterd == false)
 			cheatCode2.readInput(a, callbackTank2);
 		playerTank->stop();
@@ -181,24 +181,24 @@ void Game::KeyboardDown(Event event, bool keyboard,bool textEnterd) {//come to h
 void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 	Keyboard::Key aKey = event.key.code;
 	if (event.joystickButton.joystickId == 1 && event.joystickButton.button == 2) {
-		player2Tank->addBullet(unsigned int(player2Tank->getScore() / 5));
-		player2Tank->setScore(unsigned int(player2Tank->getScore() % 5));
+		player2Tank->addBullet((unsigned int)(player2Tank->getScore() / 5));
+		player2Tank->setScore((unsigned int)(player2Tank->getScore() % 5));
 	}
 
 	if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 2) {
-		playerTank->addBullet(unsigned int(playerTank->getScore() / 5));
-		playerTank->setScore(unsigned int(playerTank->getScore() % 5));
+		playerTank->addBullet((unsigned int)(playerTank->getScore() / 5));
+		playerTank->setScore((unsigned int)(playerTank->getScore() % 5));
 	}
 
 
 	if (aKey == Keyboard::LShift) {
-		player2Tank->addBullet(unsigned int(playerTank->getScore() / 5));
-		player2Tank->setScore(unsigned int(playerTank->getScore() % 5));
+		player2Tank->addBullet((unsigned int)(playerTank->getScore() / 5));
+		player2Tank->setScore((unsigned int)(playerTank->getScore() % 5));
 	}
 
 	if (aKey == Keyboard::RShift) {
-		playerTank->addBullet(unsigned int(player2Tank->getScore() / 5));
-		playerTank->setScore(unsigned int(player2Tank->getScore() % 5));
+		playerTank->addBullet((unsigned int)(player2Tank->getScore() / 5));
+		playerTank->setScore((unsigned int)(player2Tank->getScore() % 5));
 	}
 
 
@@ -302,7 +302,7 @@ void Game::update() {// re-painting game board with new dates.
 
 	gameWindow->clear();
 	gameMap->paint(gameWindow);
-	
+
 	gameWindow->draw(playerTank->getSpTank()->getSprite());// draw tank
 	gameWindow->draw(player2Tank->getSpTank()->getSprite());// draw tank
 	mMutexExplosion.lock();
@@ -313,7 +313,7 @@ void Game::update() {// re-painting game board with new dates.
 	for (Bullet*aBullet:bulletList) {// draw bullets one by one
 		gameWindow->draw(aBullet->spBullet->getSprite());
 	}
-	
+
 
 	gameWindow->draw(dashBoard);
 	gameWindow->draw(tank1Hp.getText());
@@ -340,14 +340,14 @@ void Game::update() {// re-painting game board with new dates.
 	for (Bonus*tmp : BonusList) {
 		gameWindow->draw(tmp->getSprite());
 	}
-	
-	
+
+
 	//score counter draw
 	gameWindow->draw(lblP1Score.getText());
 	gameWindow->draw(lblP2Score.getText());
 	gameWindow->draw(tank1Bullet.getText());
 	gameWindow->draw(tank2Bullet.getText());
-	
+
 
 	if (gamePause&&gameOver == false) {
 		gameWindow->draw(pauseView);
@@ -360,12 +360,12 @@ void Game::update() {// re-painting game board with new dates.
 			cheatCode1.draw(gameWindow);
 			cheatCode2.draw(gameWindow);
 		}
-		
+
 	}
 	if (gameOver) {// if game end, draw text
 		gameWindow->draw(pauseView);
 		gameWindow->draw(gameOverText.getText());
-		
+
 	}
 	gameWindow->display();
 	//aEdit.setFocus(gameWindow);
@@ -408,7 +408,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 		if (player2Tank->isContainItems(playerTank->getPtMouth(), &tmp1) || playerTank->outOfScreen()) {
 			playerTank->stop(true);
 		}
-		
+
 		for (int i = 0; i < gameMap->vBricks.size(); i++) {
 			if (gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
 				playerTank->stop(true);
@@ -421,7 +421,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			if (gameMap->vMetals[i]->sprite.isContaining(player2Tank->getPtMouth(), &tmp2))
 				player2Tank->stop(true);
 		}
-		
+
 		for (int i = 0; i < BonusList.size(); i++) {
 			if (BonusList[i]->isContaining(playerTank->getPtMouth(), &tmp1)) {
 				playerTank->eat(BonusList[i]);
@@ -445,7 +445,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			playerTank->setGameOver();
 			animateThread = new std::thread(&Game::playBoom, this);
 		}
-	
+
 		std::ostringstream ssScoreP1, ssScoreP2;
 		ssScoreP1.str(""); //refresh score label
 		ssScoreP2.str("");
@@ -467,10 +467,10 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 		str1Bullet << Ammo << playerTank->getBulletAmount();
 		str2Bullet << Ammo << player2Tank->getBulletAmount();
 		tank1Bullet.setString(str1Bullet.str());
-		tank2Bullet.setString(str2Bullet.str()); 
+		tank2Bullet.setString(str2Bullet.str());
 
 	}
-	
+
 
 }
 
@@ -483,12 +483,25 @@ Game::Game() {
 	player2Tank = new Tank(BPoint(500, 900), direction::top, BSize(50, 50), Color(255, 100, 100, 255));
 	flyThread = new std::thread(&Game::FLY, this);// init fly thread
 	GIFThread = new std::thread(&Game::playExplosion, this);
-	
+
 	gameMap = new GameMap();
 	FloatRect gameRect = FloatRect(0, 0, 1000, 1000);
 	pauseView= RectangleShape(Vector2f(1000, 1000));
 	pauseView.setPosition(Vector2f(0, 0));
 	pauseView.setFillColor(Color(0, 0, 0, 230));
+
+	MyFont = new Font();
+	if (!MyFont->loadFromFile("fonts/font2.ttf"))
+	{
+		std::cout << "Could not load font " << "fonts/font2.ttf" << std::endl;
+		if(!MyFont->loadFromFile("fonts/font1.otf")){
+			std::cerr << "Font1 doesn't work either, full abort\n";
+			std::exit(1);
+		}
+		std::cout << "Using font1 instead\n";
+	}
+
+
 	pauseText = BText("Paused",Color::Red, BPoint(450, 10),MyFont,50);
 	pauseText.GoCenter(gameRect);
 	srand(time(nullptr));
@@ -499,10 +512,10 @@ Game::Game() {
 	cheatCode2 = BLineEdit(BPoint(400, 960), gameWindow,"Red");
 
 
-	
-	
+
+
 	for (int i = 0; i < strBnsTxt.size(); i++) {
-		std::string path = strBnsTxt[i].insert(0, "images\\");
+		std::string path = strBnsTxt[i].insert(0, "images/");
 		Texture aTx = Texture();
 		try {
 			if (!aTx.loadFromFile(path)) {
@@ -517,7 +530,7 @@ Game::Game() {
 		}
 		bonusTexturs.push_back(aTx);
 	}
-	
+
 
 	for (int i = 0; i < 1000; i += 50) {
 		for (int j = 0; j < 1000; j += 50) {
@@ -538,12 +551,7 @@ Game::Game() {
 		}
 		boomTextures.push_back(tmp);
 	}
-	MyFont = new Font();
-	if (!MyFont->loadFromFile("fonts/font2.ttf"))
-	{
-		std::cerr << "Could not load font " << "fonts/font2.ttf" << std::endl;
-		std::exit(1);
-	}
+
 
 	dashBoard.setFillColor(Color(125, 125, 125));
 	dashBoard.setPosition(1000, 0);
@@ -565,13 +573,13 @@ void Game::mouseButtonDown(Event e) {
 	cheatCode2.setFocus(pt, gameWindow,event);
 	if (BtContinue.contains(pt))
 		gamePause = false;
-	
+
 }
 
 void Game::play() { // call this function to start playing
 	gameWindow->requestFocus();
 	gameClock.restart();
-	
+
 
 	while (gameWindow->isOpen())
 	{
@@ -587,14 +595,14 @@ void Game::play() { // call this function to start playing
 					gameOver = true;
 					gameWindow->close();
 				}
-					
+
 				if (event->type == sf::Event::EventType::KeyPressed || event->type == sf::Event::EventType::TextEntered) {
 					if (event->type == sf::Event::EventType::TextEntered)
 						KeyboardDown(*event, false, true);
 					else
 						KeyboardDown(*event, true);
 				}
-					
+
 				if (event->type == sf::Event::EventType::JoystickMoved)
 					KeyboardDown(*event, false);
 				if (event->type == sf::Event::EventType::KeyReleased || event->type == sf::Event::EventType::JoystickButtonReleased)//|| Event::EventType::JoystickButtonPressed)
@@ -617,7 +625,7 @@ void Game::play() { // call this function to start playing
 			}
 		}
 		update();// re-painting
-			
+
 	}
 }
 
@@ -634,7 +642,7 @@ void Game::playExplosion() {
 }
 
 void Game::playBoom() {//paint gif
-	for (int i = 0; i < 8; i++) { 
+	for (int i = 0; i < 8; i++) {
 		if (deadTank) {
 			deadTank->getSpTank()->BSetTexture(*boomTextures[i]);
 			sleep(milliseconds(150));

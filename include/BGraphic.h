@@ -1,4 +1,5 @@
 #pragma once
+#pragma warning(disable : 4996)
 #include <SFML/Graphics.hpp>
 #include<vector>
 #include <SFML/Audio.hpp>
@@ -72,6 +73,20 @@ public:
 	BPoint move(int mX, int mY) {// taking move amount, move the point and return the point after moving
 		return BPoint(x + mX, y + mY);
 	}
+
+	char*serilazationOut() {
+		char*data=new char[128];
+		data = reinterpret_cast<char*>(&x);
+		//float f = *reinterpret_cast<float*>(data);
+		char*cY = reinterpret_cast<char*>(&y);
+		char*c = cY;
+		strcat(data, cY);
+		return data;
+		memcpy(c, data+8, 8);
+		float af = *reinterpret_cast<float*>(c);
+		int a = sizeof(data);
+		return data;
+	}
 };
 
 
@@ -102,6 +117,9 @@ public:
 
 	void setSize(BSize aSize) {
 		spSize = aSize;
+	}
+	direction getDc() {
+		return dic;
 	}
 
 	BSprite() = default;
@@ -147,6 +165,11 @@ public:
 	BPoint BGetPosition() {
 		return BPoint(getPosition().x, getPosition().y);
 	}
+
+	BPoint getCenter() {
+		return BPoint(getPosition().x+ spSize.width/2, getPosition().y+ spSize.height / 2);
+	}
+
 	//rotate around center point; take the new direction, compare with old direction and determine how many degree need rotate
 	void BRotate(direction newDic) {// rotating around the center position
 
@@ -238,7 +261,7 @@ public:
 
 
 class BText :public Text {
-	Font*myFont;
+	Font*myFont = nullptr;
 	Align mAlign = null;
 	FloatRect bdRect;
 public:
@@ -290,7 +313,7 @@ public:
 			break;
 		case centerTop:
 			GoCenter(boundRect);
-			move(0, -boundRect.height / 2 + height / 2);
+			move(0, -boundRect.height / 2 + height / 2+2);
 			break;
 		case centerBot:
 			GoCenter(boundRect);
@@ -309,15 +332,15 @@ public:
 		FloatRect tmp = Text::getLocalBounds();
 		Vector2f a = Vector2f(boundRect.left+float(boundRect.width/ 2), boundRect.top+float(boundRect.height / 2));
 		setPosition(a);
-		move(-tmp.width /2,  -tmp.height / 2);
+		move(-tmp.width /2,  -tmp.height );
 		bdRect = boundRect;
 		mAlign = center;
 	};
 
 	BText() {};
-	Text getText() {
+	Text& getText() {
 		setAlignment(bdRect,mAlign);
-		Text tmp = *dynamic_cast<Text*>(this);
+		Text&tmp = *dynamic_cast<Text*>(this);
 		tmp.setFont(*myFont);
 		return tmp;
 	}
@@ -325,118 +348,13 @@ public:
 
 };
 
-class BLineEdit:public RectangleShape {
-	
-	Color colorText;
-	Color colorBackground;
-	bool isFocusing=false;
-	Event event;
-	std::string strText;
-	BSize selfSize;
-public:
-	BText text;
-	BLineEdit(BPoint pt, std::string str = "" , BSize size = BSize(200, 30),
-		Color textColor = Color::Black, Color backgroundColor = Color::White) :RectangleShape(Vector2f(size.width,size.height)){
-		selfSize = size;
-		setPosition(pt.getV2f());
-		colorBackground = backgroundColor;
-		colorText = textColor;
-		strText = str;
-		text = BText(str, textColor, pt, nullptr, 20 );
-		FloatRect tmp = FloatRect(pt.x, pt.y, size.width, size.height);
-		text.setAlignment(tmp, centerLeft);
-	}
 
-	void setBackgroundColor(Color aColor) {
-		colorBackground = aColor;
-		setFillColor(aColor);
-	}
-	void setTextColor(Color aColor) {
-		colorText = aColor;
-		text.setFillColor(aColor);
-	}
-
-	void setFocus(Window*w) {
-		isFocusing = true;
-		while (w->isOpen()&&isFocusing)
-		{
-			while (w->pollEvent(event))// listening events
-			{
-				if (event.type == sf::Event::EventType::KeyPressed) {
-					char c = getKey();
-					strText+=c;
-					text.setString(strText);
-					FloatRect tmp = FloatRect(this->getPosition().x, this->getPosition().y, selfSize.width, selfSize.height);
-					text.GoCenter(tmp);
-				}
-			}
-		}
-	}
-	
-
-	//Credit prof Bently
-	char getKey()
-	{
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::A))
-			return  'a';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::B))
-			return  'b';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::C))
-			return  'c';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::D))
-			return  'd';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::E))
-			return  'e';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::F))
-			return  'f';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::G))
-			return  'g';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::H))
-			return  'h';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::I))
-			return  'i';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::J))
-			return  'j';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::K))
-			return  'k';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::L))
-			return  'l';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::M))
-			return  'm';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::N))
-			return  'n';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::O))
-			return  'o';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::P))
-			return  'p';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Q))
-			return  'q';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::R))
-			return  'r';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::S))
-			return  's';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::T))
-			return  't';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::U))
-			return  'u';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::V))
-			return  'v';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::W))
-			return  'w';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::X))
-			return  'x';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Y))
-			return  'y';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Z))
-			return  'z';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Space))
-			return  ' ';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Enter))
-			return  '\n';
-		if (sf::Keyboard::isKeyPressed(sf::Keyboard::Backspace))
-			return  '\b';
-		return ' ';
-	}
-
-
+struct TankData {
+	float x;
+	float y;
+	int direction;
+	int fire = 0;
+	int score;
+	int bullet;
+	int HP;
 };

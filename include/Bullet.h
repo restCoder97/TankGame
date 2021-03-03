@@ -4,7 +4,7 @@ const int BulletSpeed = 10;
 const BSize bulletSize = BSize(20, 20);
 class Bullet {
 public:
-
+	bool AIBullet= false;
 	BSprite*spBullet;
 	direction dirFly;
 	Texture aTexture;

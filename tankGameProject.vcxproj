@@ -19,22 +19,39 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="include\Date.cpp" />
+    <ClCompile Include="include\HighScores.cpp" />
+    <ClCompile Include="include\LeaderBoard.cpp" />
+    <ClCompile Include="include\Score.cpp" />
+    <ClCompile Include="include\SingleGame.cpp" />
     <ClCompile Include="src\BGraphic.cpp" />
+    <ClCompile Include="src\Bonus.cpp" />
     <ClCompile Include="src\Brick.cpp" />
     <ClCompile Include="src\Bullet.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GameMap.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Metal.cpp" />
+    <ClCompile Include="src\SWeidget.cpp" />
     <ClCompile Include="src\Tank.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\AITank.h" />
     <ClInclude Include="include\BGraphic.h" />
+    <ClInclude Include="include\Bonus.h" />
     <ClInclude Include="include\Brick.h" />
     <ClInclude Include="include\Bullet.h" />
+    <ClInclude Include="include\Date.h" />
     <ClInclude Include="include\Game.h" />
     <ClInclude Include="include\GameMap.h" />
+    <ClInclude Include="include\HighScores.h" />
+    <ClInclude Include="include\leaderBoard.h" />
+    <ClInclude Include="include\MainPage.h" />
     <ClInclude Include="include\Metal.h" />
+    <ClInclude Include="include\onlineGame.h" />
+    <ClInclude Include="include\Score.h" />
+    <ClInclude Include="include\SingleGame.h" />
+    <ClInclude Include="include\SWeidget.h" />
     <ClInclude Include="include\Tank.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">

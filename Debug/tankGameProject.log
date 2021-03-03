@@ -16,42 +16,14 @@ f:\tankgame\tank02-24\include\bgraphic.h(215): warning C4244: 'argument': conver
 f:\tankgame\tank02-24\include\bgraphic.h(217): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
 f:\tankgame\tank02-24\include\bgraphic.h(226): warning C4018: '<': signed/unsigned mismatch
 f:\tankgame\tank02-24\include\tank.h(19): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\include\singlegame.cpp(229): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\include\singlegame.cpp(246): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\include\singlegame.cpp(310): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\include\singlegame.cpp(336): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\include\singlegame.cpp(349): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\include\singlegame.cpp(358): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\include\singlegame.cpp(425): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-f:\tankgame\tank02-24\include\singlegame.cpp(426): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\include\singlegame.cpp(557): warning C4018: '<': signed/unsigned mismatch
-  Game.cpp
-f:\tankgame\tank02-24\include\bgraphic.h(60): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(61): warning C4244: '=': conversion from 'int' to 'float', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(135): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(186): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(188): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(190): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(192): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(199): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(201): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(203): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(205): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(211): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(213): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(215): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(217): warning C4244: 'argument': conversion from 'float' to 'int', possible loss of data
-f:\tankgame\tank02-24\include\bgraphic.h(226): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\include\tank.h(19): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\src\game.cpp(250): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\src\game.cpp(263): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\src\game.cpp(426): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\src\game.cpp(432): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\src\game.cpp(439): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\src\game.cpp(446): warning C4018: '<': signed/unsigned mismatch
-f:\tankgame\tank02-24\src\game.cpp(508): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
-f:\tankgame\tank02-24\src\game.cpp(518): warning C4018: '<': signed/unsigned mismatch
-  Generating Code...
+f:\tankgame\tank02-24\src\singlegame.cpp(229): warning C4018: '<': signed/unsigned mismatch
+f:\tankgame\tank02-24\src\singlegame.cpp(246): warning C4018: '<': signed/unsigned mismatch
+f:\tankgame\tank02-24\src\singlegame.cpp(310): warning C4018: '<': signed/unsigned mismatch
+f:\tankgame\tank02-24\src\singlegame.cpp(336): warning C4018: '<': signed/unsigned mismatch
+f:\tankgame\tank02-24\src\singlegame.cpp(349): warning C4018: '<': signed/unsigned mismatch
+f:\tankgame\tank02-24\src\singlegame.cpp(358): warning C4018: '<': signed/unsigned mismatch
+f:\tankgame\tank02-24\src\singlegame.cpp(425): warning C4244: 'argument': conversion from 'time_t' to 'unsigned int', possible loss of data
+f:\tankgame\tank02-24\src\singlegame.cpp(426): warning C4018: '<': signed/unsigned mismatch
+f:\tankgame\tank02-24\src\singlegame.cpp(557): warning C4018: '<': signed/unsigned mismatch
 D:\VS2017\Common7\IDE\VC\VCTargets\Microsoft.CppBuild.targets(1216,5): warning MSB8012: TargetPath(F:\TankGame\Tank02-24\Debug\tankGameProject.exe) does not match the Linker's OutputFile property value (F:\TankGame\Tank02-24\lib\tankGameProject.exe). This may cause your project to build incorrectly. To correct this, please make sure that $(OutDir), $(TargetName) and $(TargetExt) property values match the value specified in %(Link.OutputFile).
-  LINK : .\lib\tankGameProject.exe not found or not built by the last incremental link; performing full link
   tankGameProject.vcxproj -> F:\TankGame\Tank02-24\Debug\tankGameProject.exe

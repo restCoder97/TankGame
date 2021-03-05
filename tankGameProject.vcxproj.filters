@@ -45,6 +45,7 @@
     <ClCompile Include="src\SWeidget.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+<<<<<<< HEAD
     <ClCompile Include="include\SingleGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -58,6 +59,21 @@
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="include\LeaderBoard.cpp">
+=======
+    <ClCompile Include="src\Date.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HighScores.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\LeaderBoard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Score.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\SingleGame.cpp">
+>>>>>>> 506f185c4d7da6b8e7b9d39dba47f4de261f85ef
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>

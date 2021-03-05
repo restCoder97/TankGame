@@ -266,7 +266,7 @@ class BText :public Text {
 	Align mAlign = null;
 	FloatRect bdRect;
 public:
-	BText(const String & string, Color aColor, BPoint pt = BPoint(0, 0), Font*ft = nullptr, unsigned int characterSize = 30,const std::string strFileName = "fonts//font2.ttf"
+	BText(const String & string, Color aColor, BPoint pt = BPoint(0, 0), Font*ft = nullptr, unsigned int characterSize = 30,const std::string strFileName = "fonts/font2.ttf"
 		):Text(string,Font(),characterSize) {
 		if (ft)
 			myFont = ft;

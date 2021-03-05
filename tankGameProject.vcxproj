@@ -19,19 +19,19 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="include\Date.cpp" />
-    <ClCompile Include="include\HighScores.cpp" />
-    <ClCompile Include="include\LeaderBoard.cpp" />
-    <ClCompile Include="include\Score.cpp" />
-    <ClCompile Include="include\SingleGame.cpp" />
     <ClCompile Include="src\BGraphic.cpp" />
     <ClCompile Include="src\Bonus.cpp" />
     <ClCompile Include="src\Brick.cpp" />
     <ClCompile Include="src\Bullet.cpp" />
+    <ClCompile Include="src\Date.cpp" />
     <ClCompile Include="src\Game.cpp" />
     <ClCompile Include="src\GameMap.cpp" />
+    <ClCompile Include="src\HighScores.cpp" />
+    <ClCompile Include="src\LeaderBoard.cpp" />
     <ClCompile Include="src\main.cpp" />
     <ClCompile Include="src\Metal.cpp" />
+    <ClCompile Include="src\Score.cpp" />
+    <ClCompile Include="src\SingleGame.cpp" />
     <ClCompile Include="src\SWeidget.cpp" />
     <ClCompile Include="src\Tank.cpp" />
   </ItemGroup>

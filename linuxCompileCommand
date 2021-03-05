@@ -2,8 +2,8 @@ Preliminary to make life easy:
 sudo apt-get install sfml-dev
 
 to:
-	compile to obj files                              link the files							put exec	    clear the obj files
-g++ -c -std=c++17 -I ./include/ ./src/*.cpp && g++ *.o -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system -pthread -o ./binFile/linuxBuild && rm *.o
+	compile to obj files                              link the files							put exec	    																																					clear the obj files
+	g++ -c -std=c++17 -I ./include/ ./src/*.cpp && g++ *.o -lsfml-graphics -lsfml-window -lsfml-audio -lsfml-system -lsfml-network -g -pthread -o ./binFile/linuxBuild && rm *.o
 
 to run the file:
 ./binFile/linuxBuild

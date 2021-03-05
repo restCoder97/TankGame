@@ -148,7 +148,7 @@ void Tank::fire(std::vector<Bullet*>&bList) {// shooting
 	if(storedBonus.size()!=0&& storedBonus.top()->getId()== 2)
 		aBullet = new Bullet(getPtMouth(), tankFace,20);
 	else
-		aBullet = new Bullet(getPtMouth(), tankFace);
+		aBullet = new Bullet(getPtMouth(), tankFace,nDmg);
 	if (storedBonus.size() == 0||storedBonus.top()->getId() != 4)
 		nBullets--;
 	bList.push_back(aBullet);// add a bullet to the game

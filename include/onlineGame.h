@@ -12,6 +12,8 @@ class ServerGame :public Game {
 	std::thread*threadRecive;
 	std::thread*threadSend;
 	sf::TcpSocket socket;
+	std::thread*watingThread;
+	bool isWaiting = true;
 
 
 public:
@@ -19,11 +21,29 @@ public:
 		isOnLineGame = true;
 		sf::TcpListener listener;
 		listener.listen(port);
+		cout << "Waiting Clint Connect!" << endl;
+		//watingThread = new std::thread(&ServerGame::waiting, this);
 		listener.accept(socket);
+		
 		threadRecive = new std::thread(&ServerGame::reciveData, this);
 		threadSend = new std::thread(&ServerGame::sendData, this);
 		gameWindow->setTitle("Server Game");
 
+	}
+
+	void waiting() {
+		listener.accept(socket);
+		cout << "Found a clint Game begin!" << endl;
+		return;
+		while(isWaiting){
+			while (gameWindow->pollEvent(*event)) {
+				if (event->type == Event::EventType::Closed) {
+					gameWindow->close();
+					throw("No Clint Found");
+				}
+			}
+		}
+		
 	}
 
 	void reciveData() {

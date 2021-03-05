@@ -103,8 +103,8 @@ public:
 	void pbSinglePlayDown() {
 		SingleGame aGame(searchBox.getTitle());
 		aGame.play();
-		int a = 0;
 	}
+
 	void pbJoinDown() {
 		std::string aString = portNumber2.getTitle();
 		std::string::size_type sz;

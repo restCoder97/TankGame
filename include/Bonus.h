@@ -98,7 +98,7 @@ public:
 class URF :public Bonus {
 public:
 	URF() :Bonus() {
-		effectiveTime = 5;
+		effectiveTime = 10;
 		thisType = urf;
 		ID = 4;
 	}

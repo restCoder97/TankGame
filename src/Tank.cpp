@@ -1,8 +1,6 @@
 #include "Tank.h"
 #include "Bullet.h"
 #include <SFML/Audio.hpp>
-#include<iostream>
-
 
 void Tank::setGameOver() {
 	gameOver = true;
@@ -106,7 +104,7 @@ void Tank::MOVE() {// moving thread function
 			sleep(milliseconds(20));//speed is 1 pixel per 10 millisecond
 		else if (storedBonus.top()->getId() != 1)
 			sleep(milliseconds(20));//speed is 1 pixel per 10 millisecond
-		else
+		else 
 			sleep(milliseconds(10));
 		if (isMoving) {
 		  if (tankFace == 1) {
@@ -130,12 +128,12 @@ void Tank::MOVE() {// moving thread function
 	MvThreadEnd = true;
 }
 
-void Tank::fire(std::vector<Bullet*>&bList) {// shooting
+void Tank::fire(std::vector<Bullet*>&bList) {// shooting 
 	if (int(fireFrequenceClock.getElapsedTime().asMilliseconds()) < limitFireFrequence) {
 		if (storedBonus.size() != 0) {
 			if (storedBonus.top()->getId() != 4);
 				return;
-		}
+		}	
 		else {
 			return;
 		}
@@ -150,7 +148,7 @@ void Tank::fire(std::vector<Bullet*>&bList) {// shooting
 	if(storedBonus.size()!=0&& storedBonus.top()->getId()== 2)
 		aBullet = new Bullet(getPtMouth(), tankFace,20);
 	else
-		aBullet = new Bullet(getPtMouth(), tankFace);
+		aBullet = new Bullet(getPtMouth(), tankFace,nDmg);
 	if (storedBonus.size() == 0||storedBonus.top()->getId() != 4)
 		nBullets--;
 	bList.push_back(aBullet);// add a bullet to the game
@@ -206,7 +204,7 @@ void Tank::switchDirection(direction newDic) {
 	if(tankFace != newDic)
 		justSwitchDic = true;
 	spTank->BRotate(newDic);
-	tankFace = newDic;
+	tankFace = newDic;	
 }
 
 
@@ -215,7 +213,8 @@ void Tank::stop(bool hittedWall) {
 	if(hittedWall)
 		stopClock.restart();
 	isMoving = false;
-	sdMoving->stop();
+	if(sdMoving)
+		sdMoving->stop();
 }
 
 
@@ -230,10 +229,4 @@ Tank::~Tank() {
 		delete sdExplosion;
 	if (sdMoving)
 		delete sdMoving;
-}
-
-//decide where to go
-//go there;
-void AITank::think(){
-	std::cout << "thot"<< std::endl;
 }

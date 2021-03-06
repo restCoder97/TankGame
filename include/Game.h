@@ -2,7 +2,12 @@
 
 #include"Tank.h"
 #include<list>
+#include<map>
 #include"GameMap.h"
+#include"SWeidget.h"
+#include <SFML/Network.hpp>
+
+
 //#include"GameMap.h"
 //#include "Bonus.h"
 
@@ -11,21 +16,24 @@ using namespace sf;
 
 class Game
 {
+protected:
+
 	RenderWindow*gameWindow;
-	Event event;
+	Event*event = nullptr;
 	Tank*playerTank;
 	Tank*player2Tank;
-	BLineEdit aEdit = BLineEdit(BPoint(100, 100), "Hello World!");
 	//GameMap gameMap;
 	std::thread*flyThread = nullptr;// execute Bullets' move
 	std::thread*animateThread = nullptr;
 	std::thread*GIFThread = nullptr;
+	std::thread*checkTankThread = nullptr;
 	bool gameOver = false;
 	BText gameOverText;
 	BText tank1Hp;
 	BText tank2Hp;
 	BText lblP1Score, lblP2Score;
 	BText tank2Bullet, tank1Bullet;
+	bool isOnLineGame = false;
 
 	BText pauseText;
 	RectangleShape pauseView;
@@ -42,6 +50,10 @@ class Game
 	std::vector<BPoint>pts;
 	std::vector<Texture*>boomTextures ;
 	RectangleShape dashBoard = RectangleShape(Vector2f(100, 1000));
+	SButton BtContinue;
+	BLineEdit cheatCode1;
+	BLineEdit cheatCode2;
+	
 	Tank*deadTank= nullptr;
 	GameMap*gameMap;
 	int stickConnected = 0;
@@ -49,23 +61,40 @@ class Game
 	vector<BSprite>explosionList = {};
 	vector<GIF*>boomGifs = {};
 	Mutex mMutexExplosion;
+
+	sf::TcpListener listener;
+
+	
+	
+	
 	void CheckKeyboard();
-	void KeyboardDown(Event event, bool keyboard = true);
+	void KeyboardDown(Event event, bool keyboard = true,bool textEntered = false);
 	void KeyboardReleased(Event event);
 	void checkBullets();
-	void FLY();
+	
 	void update();
 	void checkTanks();
-	void playBoom();
-	void playExplosion();
+	
+	
 	bool gamePause=false;
 	void GenerateBonus();
+	void mouseButtonDown(Event e);
 
+
+	
+	
+	
 
 public:
 	std::vector<Bullet*>bulletList;
-        std::vector<Coin*> coinVec;
+    std::vector<Coin*> coinVec;
+	void playBoom();
+	void playExplosion();
 	Game();
+	void FLY();
 	~Game();
 	void play();
 };
+
+
+

@@ -49,7 +49,11 @@ void Game::GenerateBonus() {
 	}
 	aBonus->setImage(bonusTexturs[aBonus->getId()]);
 	int y = rand() % 950;
-	int x = rand()% 950;
+	int x = rand() % 950;
+	while (x < 25 || y < 25) {
+		y = rand() % 950;
+		x = rand() % 950;
+	}
 	aBonus->setCenterAt(BPoint(x, y));
 	BonusList.push_back(aBonus);
 
@@ -104,12 +108,25 @@ void Game::KeyboardDown(Event event, bool keyboard,bool textEnterd) {//come to h
 	if (gamePause|| gameOver) {
 		auto callbackTank1 = std::bind(&Tank::tankCheating, playerTank,_1);//placeholders c++ 11
 		auto callbackTank2 = std::bind(&Tank::tankCheating, player2Tank, _1);
-		if (cheatCode1.isFocusing&&textEnterd == false) {
-			cheatCode1.readInput(a, callbackTank1);
-		}
+		
+		if ( keyboard &&textEnterd == false) {
+			if (cheatCode1.isFocusing) {
+				cheatCode1.readInput(a, callbackTank1);
+				if (cheatCode1.getTitle() == "win") {
+					player2Tank->setHP(0);
+					return;
+				}
 
-		else if (cheatCode2.isFocusing&&textEnterd == false)
-			cheatCode2.readInput(a, callbackTank2);
+			}
+			else if (cheatCode2.isFocusing&& keyboard &&textEnterd == false) {
+				cheatCode2.readInput(a, callbackTank2);
+				if (cheatCode2.getTitle() == "win") {
+					playerTank->setHP(0);
+					return;
+				}
+			}
+		}
+		
 		playerTank->stop();
 		player2Tank->stop();
 		return;
@@ -443,7 +460,7 @@ void Game::checkTanks() {// check tank for collision or running out of screen;
 			playerTank->stop();
 			player2Tank->setGameOver();
 			playerTank->setGameOver();
-			animateThread = new std::thread(&Game::playBoom, this);
+ 			animateThread = new std::thread(&Game::playBoom, this);
 		}
 
 		std::ostringstream ssScoreP1, ssScoreP2;
@@ -655,10 +672,6 @@ void Game::playBoom() {//paint gif
 
 Game::~Game() {
 
-	//while (!boomPlayed) {
-		//sleep(milliseconds(10));
-	//}
-
 	sleep(seconds(1));
 	if (player2Tank)
 		delete player2Tank;
@@ -674,7 +687,9 @@ Game::~Game() {
 		if(boomTextures[i])
 			delete boomTextures[i];
 	}
-	int a = 0;
+	flyThread->detach();
+	if (flyThread)
+		delete flyThread;
 	if (gameWindow)
 		delete gameWindow;
 

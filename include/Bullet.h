@@ -10,6 +10,6 @@ public:
 	Texture aTexture;
 	int nDamage = 10;
 	const std::string bulletPath = "images/bullet.png";
-	Bullet(BPoint startPoint, direction dic,unsigned int damage = 10);
+	Bullet(BPoint startPoint, direction dic,unsigned int damage = 100);
 	BPoint getPeekPoint();
 };

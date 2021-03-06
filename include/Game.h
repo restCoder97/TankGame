@@ -64,24 +64,24 @@ protected:
 
 	sf::TcpListener listener;
 
-	// Listen to the given port for incoming connections
+	
 	
 	
 	void CheckKeyboard();
 	void KeyboardDown(Event event, bool keyboard = true,bool textEntered = false);
 	void KeyboardReleased(Event event);
 	void checkBullets();
-	void FLY();
+	
 	void update();
 	void checkTanks();
 	
-	void playExplosion();
+	
 	bool gamePause=false;
 	void GenerateBonus();
 	void mouseButtonDown(Event e);
 
-	void tankCheating();
 
+	
 	
 	
 
@@ -89,7 +89,9 @@ public:
 	std::vector<Bullet*>bulletList;
     std::vector<Coin*> coinVec;
 	void playBoom();
+	void playExplosion();
 	Game();
+	void FLY();
 	~Game();
 	void play();
 };

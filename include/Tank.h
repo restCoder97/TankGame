@@ -76,6 +76,7 @@ protected:
 	bool lockedHP = false;
 	std::thread * moveThread;
 	std::string Name = "";
+	int nDmg = 10;
 	
 
 public:
@@ -130,7 +131,6 @@ public:
 		}
 	}
 	
-
 	//start moving
 	void move();
 	int getBulletAmount() {
@@ -141,6 +141,8 @@ public:
 	}
 	void setScore(int amount) {
 		score = amount;
+		if (score <= 0)
+			score = 0;
 	}
 
 	void switchDirection(direction newDic);
@@ -176,6 +178,7 @@ public:
 		memcpy(result, &data, sizeof(data));
 		return result;
 	}
+	void setDamage(unsigned int n) { nDmg = n; }
 
 	void tankCheating(std::string strBackDoor) {
 		Bonus*aBonus = new Bonus();
@@ -208,9 +211,8 @@ public:
 			aBonus = new Coin();
 			eat(aBonus);
 		}
-
-
 	}
+
 	~Tank();
 };
 

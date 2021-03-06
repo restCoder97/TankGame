@@ -5,19 +5,15 @@
 #include"GameMap.h"
 #include"AITank.h"
 #include"leaderBoard.h"
-//#include"GameMap.h"
-//#include "Bonus.h"
-
+#include"Game.h"
 using namespace sf;
 
 
-class SingleGame
+class SingleGame 
 {
 	RenderWindow*gameWindow;
-	Event event;
 	Tank*playerTank;
-	std::vector<AITank*>AiTankList = {};
-	bool didWriteScore = false;
+	
 	std::thread*flyThread = nullptr;// execute Bullets' move
 	std::thread*animateThread = nullptr;
 	std::thread*GIFThread = nullptr;
@@ -49,6 +45,7 @@ class SingleGame
 	vector<BSprite>explosionList = {};
 	vector<GIF*>boomGifs = {};
 	Mutex mMutexExplosion;
+	BLineEdit cheatCode2;
 	void CheckKeyboard();
 	void KeyboardDown(Event event, bool keyboard = true);
 	void KeyboardReleased(Event event);
@@ -60,10 +57,15 @@ class SingleGame
 	void playExplosion();
 	bool gamePause = false;
 	void GenerateBonus();
-
+protected:
+	std::vector<Bullet*>bulletList;
+	Event event;
+	std::vector<AITank*>AiTankList = {};
+	bool didWriteScore = false;
+	
+	
 
 public:
-	std::vector<Bullet*>bulletList;
 	SingleGame(std::string Name);
 	~SingleGame();
 	void play();

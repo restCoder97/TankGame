@@ -141,13 +141,13 @@ public:
 
 
 	void BSetTexture(Texture&texture) {
-		mMutex.lock();
+		//mMutex.lock();
 		setTexture(texture);
 		float widthScale = (static_cast<float>(spSize.width) / texture.getSize().x);
 		float heightScale = static_cast<float>(spSize.height) / texture.getSize().y;
 		BTexture = &texture;
 		setScale(widthScale, heightScale);
-		mMutex.unlock();
+		//mMutex.unlock();
 	}
 
 	BPoint getPeakPoint() {// grabe vector graph's peak point ex: tank's muzzle, Bullet's warhead
@@ -224,7 +224,7 @@ public:
 		if ( getGlobalBounds().contains(pt.getV2f()))
 			return true;
 		else if(pts){
-			for (int i = 0; i < pts->size(); i++) {
+			for (auto i = 0; i < pts->size(); i++) {
 				if (getGlobalBounds().contains(pts->at(i).getV2f()))
 					return true;
 			}

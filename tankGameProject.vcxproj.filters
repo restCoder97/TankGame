@@ -15,9 +15,6 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\BGraphic.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="src\Bullet.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -42,29 +39,26 @@
     <ClCompile Include="src\Bonus.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SWeidget.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\Date.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\HighScores.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
-    <ClCompile Include="src\LeaderBoard.cpp">
+    <ClCompile Include="src\SingleGame.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="src\Score.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="src\SingleGame.cpp">
+    <ClCompile Include="src\LeaderBoard.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\HighScores.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Date.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="include\AboutUs.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="include\BGraphic.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\Bullet.h">
       <Filter>Header Files</Filter>
     </ClInclude>
@@ -86,13 +80,7 @@
     <ClInclude Include="include\Bonus.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="include\SWeidget.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="include\onlineGame.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
-    <ClInclude Include="include\MainPage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\AITank.h">
@@ -111,6 +99,12 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="include\HighScores.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AboutUs.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\MainPage.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

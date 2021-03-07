@@ -19,7 +19,7 @@
     </ProjectConfiguration>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="src\BGraphic.cpp" />
+    <ClCompile Include="include\AboutUs.cpp" />
     <ClCompile Include="src\Bonus.cpp" />
     <ClCompile Include="src\Brick.cpp" />
     <ClCompile Include="src\Bullet.cpp" />
@@ -32,12 +32,11 @@
     <ClCompile Include="src\Metal.cpp" />
     <ClCompile Include="src\Score.cpp" />
     <ClCompile Include="src\SingleGame.cpp" />
-    <ClCompile Include="src\SWeidget.cpp" />
     <ClCompile Include="src\Tank.cpp" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="include\AboutUs.h" />
     <ClInclude Include="include\AITank.h" />
-    <ClInclude Include="include\BGraphic.h" />
     <ClInclude Include="include\Bonus.h" />
     <ClInclude Include="include\Brick.h" />
     <ClInclude Include="include\Bullet.h" />
@@ -51,7 +50,6 @@
     <ClInclude Include="include\onlineGame.h" />
     <ClInclude Include="include\Score.h" />
     <ClInclude Include="include\SingleGame.h" />
-    <ClInclude Include="include\SWeidget.h" />
     <ClInclude Include="include\Tank.h" />
   </ItemGroup>
   <PropertyGroup Label="Globals">
@@ -116,8 +114,8 @@
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
-      <AdditionalLibraryDirectories>E:\Desktop\Winter 2021\CIS 29\SFML-2.5.1-windows-vc15-32-bit %281%29\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
-      <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-network-d.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalLibraryDirectories>F:\TankGame\TankGame-Tank-03-03\lib;E:\Desktop\Winter 2021\CIS 29\SFML-2.5.1-windows-vc15-32-bit %281%29\SFML-2.5.1\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>sfml-audio-d.lib;sfml-graphics-d.lib;sfml-window-d.lib;sfml-system-d.lib;sfml-network-d.lib;BGraphic.lib;SWidget.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <OutputFile>.\lib\$(TargetName)$(TargetExt)</OutputFile>
     </Link>
   </ItemDefinitionGroup>

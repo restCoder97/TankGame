@@ -13,7 +13,7 @@ public:
 	BPoint position;
     const bool isPassable = false;
     const bool isDestroyable = false;
-
+	~Metal() {};
 	Metal(BPoint, Texture);
 };
 

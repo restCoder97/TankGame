@@ -21,5 +21,15 @@ public:
     vector<Metal*> vMetals;
     int gridLength;
     GameMap();
+	~GameMap() {
+		for (Brick*i : vBricks) {
+			if(i)
+				delete i;
+		}
+		for (Metal*i : vMetals) {
+			if(i)
+				delete i;
+		}
+	}
     void paint(sf::RenderWindow* window);
 };

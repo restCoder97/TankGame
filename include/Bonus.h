@@ -18,6 +18,7 @@ protected:
 	bool expired = false;
 	bool pausedEffecting;
 public:
+	//Bonus() = default;
 	Bonus() : BSprite(Texture(), BSize(50, 50), top, BPoint(0, 0)) {};
 	int getEffectTime() { return effectiveTime; };
 	void setImage(Texture&aText) {
@@ -98,7 +99,7 @@ public:
 class URF :public Bonus {
 public:
 	URF() :Bonus() {
-		effectiveTime = 5;
+		effectiveTime = 10;
 		thisType = urf;
 		ID = 4;
 	}

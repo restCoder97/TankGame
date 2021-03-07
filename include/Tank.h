@@ -3,46 +3,11 @@
 #include<thread>
 #include"Bonus.h"
 #include<stack>
-#include"GameMap.h"
-
 using namespace sf;
-
-
-class GIF {
-public:
-
-	int indexOfPic = 0;
-	BSprite*sp = nullptr;
-	std::vector<Texture*>txs;
-	Mutex mMutex;
-
-	GIF(std::vector<std::string>fileName, BPoint pt ) {
-
-		for (int i = 0; i < fileName.size(); i++) {
-			Texture*tmp = new Texture();
-			if (!tmp->loadFromFile(fileName[i])) {
-				std::cerr << "Can't Open file " << fileName[i] << std::endl;
-				std::exit(1);
-			}
-			txs.push_back(tmp);
-		}
-		sp = new BSprite(*txs[0], BSize(50, 50), top, pt);
-	}
-
-	bool playNext() {
-		indexOfPic++;
-		if (indexOfPic == txs.size() || indexOfPic < 0)
-			return false;
-		mMutex.lock();
-		sp->BSetTexture(*txs[indexOfPic]);
-		mMutex.unlock();
-		return true;
-	}
-
-};
 
 const Color NoColor = Color(0, 0, 0, 0);
 class Tank {
+protected:
 	Texture aTexture;
 	BSprite*spTank = nullptr;
 	BSize tankSize;
@@ -50,9 +15,8 @@ class Tank {
 	int nHp = 100;
 	int nDamage;
 	int nSpeed;
-    unsigned int score = 0;
+    int score = 0;
     sf::RectangleShape tankBox;
-	BLine trajectory;
 	bool isMoving;
 	Clock fireFrequenceClock;
 	Texture fireTexture;
@@ -74,16 +38,19 @@ class Tank {
 	bool justSwitchDic = false;
 	bool lockedHP = false;
 	std::thread * moveThread;
-
-
+	std::string Name = "";
+	int nDmg = 10;
+	
 
 public:
-
 	std::stack<Bonus*>storedBonus;
 	bool getisMoving() {
 		return isMoving; };// start moving
 	int getHp() { return nHp; }
-        unsigned int getScore() { return score; }
+    int getScore() { 
+		int i = 0;
+		return score;
+	}
 	BPoint getPtMouth() { return spTank->getPeakPoint(); }// return tank's muzzle point
 	BSprite* getSpTank() { return spTank; }
 	void setGameOver();
@@ -95,6 +62,9 @@ public:
 	BPoint getTopLeft();
 	void MOVE();
 	void fire(std::vector<Bullet*>&bList);
+	std::string getName() { return Name; };
+	void setName(std::string str) { Name = str; };
+
 	// get damage
 	void damaged(int damage);
         //score functions
@@ -121,13 +91,15 @@ public:
 		if (!storedBonus.top()->checkEffecting() && !storedBonus.top()->getExpired())
 			storedBonus.top()->effictive();
 		else if(storedBonus.top()->getExpired()){
+			Bonus*tmp = storedBonus.top();
+			tmp = new Bonus();
+			delete tmp;
 			storedBonus.pop();
 			if (!storedBonus.size() == 0)
 				storedBonus.top()->effictive();
 		}
 	}
-
-
+	
 	//start moving
 	void move();
 	int getBulletAmount() {
@@ -136,27 +108,80 @@ public:
 	void addBullet(unsigned int amount) {
 		nBullets += amount;
 	}
-	void setScore(unsigned int amount) {
+	void setScore(int amount) {
 		score = amount;
+		if (score <= 0)
+			score = 0;
 	}
 
 	void switchDirection(direction newDic);
 	void stop(bool hittedWall = false);
 	bool outOfScreen();
+
+	int getEffectiveBonusID() {
+		if (storedBonus.size() != 0)
+			return storedBonus.top()->getId();
+		return -1;
+	}
+
+	void setBullets(int n) {
+		nBullets = n;
+	}
+
+	void setHP(int n) {
+		nHp = n;
+	}
+
+	char* serilazationOut(bool firing=false) {
+		char*result = new char[256];
+		TankData data;
+		data.x = spTank->getCenter().x;
+		data.y = spTank->getCenter().y;
+		data.bullet = nBullets;
+		data.score = score;
+		data.HP = nHp;
+		data.direction = int(spTank->getDc());
+		if (firing)
+			data.fire = 77;
+		memset(result, 0, sizeof(TankData));
+		memcpy(result, &data, sizeof(data));
+		return result;
+	}
+	void setDamage(unsigned int n) { nDmg = n; }
+
+	void tankCheating(std::string strBackDoor) {
+		Bonus*aBonus = new Bonus();
+		if (strBackDoor == "lockhp") {
+			aBonus = new LockHP();
+			eat(aBonus);
+		}
+
+		if (strBackDoor == "accelerate") {
+			aBonus = new Accelerate();
+			eat(aBonus);
+		}
+
+		if (strBackDoor == "damageup") {
+			aBonus = new DamageUp();;
+			eat(aBonus);
+		}
+
+		if (strBackDoor == "recovery") {
+			aBonus = new Recovery();
+			eat(aBonus);
+		}
+
+		if (strBackDoor == "urf") {
+			aBonus = new URF();
+			eat(aBonus);
+		}
+
+		if (strBackDoor == "coin") {
+			aBonus = new Coin();
+			eat(aBonus);
+		}
+	}
+
 	~Tank();
 };
 
-class AITank : public Tank{
-public:
-	GameMap* surroundings = nullptr;
-	Tank* enemy = nullptr;
-	std::vector<Bullet*>* bList = nullptr;
-  void think();
-	AITank(BPoint pt, direction dc, BSize size, Color aColor, Tank* target, GameMap* map, std::vector<Bullet*>* bvec)
-	: Tank(pt, dc, size, aColor) {
-		enemy = target;
-		surroundings = map;
-		bList = bvec;
-	};
-
-};

@@ -45,12 +45,12 @@ GameMap::GameMap(){
 
 
 void GameMap::paint(sf::RenderWindow* window){
-	for (auto i = 0; i < vBricks.size(); ++i) {
+	for (unsigned i = 0; i < vBricks.size(); ++i) {
 		vBricks[i]->sprite.setTexture(bricksTexture);
 		window->draw(*dynamic_cast<sf::Sprite*>(&vBricks[i]->sprite));
 	}
         
-	for (auto i = 0; i < vMetals.size(); ++i) {
+	for (unsigned i = 0; i < vMetals.size(); ++i) {
 		vMetals[i]->sprite.setTexture(metalTexture);
 		window->draw(*dynamic_cast<sf::Sprite*>(&vMetals[i]->sprite));
 	}

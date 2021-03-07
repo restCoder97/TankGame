@@ -1,8 +1,6 @@
 #include "Tank.h"
 #include "Bullet.h"
 #include <SFML/Audio.hpp>
-#include<iostream>
-
 
 void Tank::setGameOver() {
 	gameOver = true;
@@ -63,23 +61,24 @@ bool Tank::outOfScreen() {
 std::vector<BPoint>Tank::getFrontPoints() {
 	std::vector<BPoint>pts = {};
 	BPoint ptM = getPtMouth();
+	
 	switch (tankFace) {
 	case top:
-		pts = { ptM.move(tankSize.width / 2-3,0),ptM.move(-tankSize.width / 2+3,0) };
+		pts = { ptM,ptM.movef(tankSize.width / 2.0-5.0,0.0),ptM.movef(-tankSize.width / 2.0+3.0,0.0) };
 		break;
 	case bot:
-		pts = { ptM.move(tankSize.width / 2-3,0),ptM.move(-tankSize.width / 2+2,0) };
+		pts = { ptM,ptM.movef(tankSize.width / 2.0-3.0,0.0),ptM.movef(-tankSize.width / 2.0+2,0.0) };
 		break;
 	case 3:
-		pts = { ptM.move(0,tankSize.height / 2-5),ptM.move(0,-tankSize.height / 2+2) };
+		pts = { ptM,ptM.movef(0.0,tankSize.height / 2.0-5.0),ptM.movef(0.0,-tankSize.height / 2.0+5.0) };
 		break;
 	case 1:
-		pts = { ptM.move(0,tankSize.height / 2-2),ptM.move(0,-tankSize.height / 2+2) };
+		pts = { ptM,ptM.movef(0.0,tankSize.height / 2.0-5.0),ptM.movef(0.0,-tankSize.height / 2.0+5.0) };
 		break;
 	default:
 		break;
 	}
-	pts.push_back(ptM);
+	
 	return pts;
 }
 
@@ -106,7 +105,7 @@ void Tank::MOVE() {// moving thread function
 			sleep(milliseconds(20));//speed is 1 pixel per 10 millisecond
 		else if (storedBonus.top()->getId() != 1)
 			sleep(milliseconds(20));//speed is 1 pixel per 10 millisecond
-		else
+		else 
 			sleep(milliseconds(10));
 		if (isMoving) {
 		  if (tankFace == 1) {
@@ -130,12 +129,12 @@ void Tank::MOVE() {// moving thread function
 	MvThreadEnd = true;
 }
 
-void Tank::fire(std::vector<Bullet*>&bList) {// shooting
+void Tank::fire(std::vector<Bullet*>&bList) {// shooting 
 	if (int(fireFrequenceClock.getElapsedTime().asMilliseconds()) < limitFireFrequence) {
 		if (storedBonus.size() != 0) {
-			if (storedBonus.top()->getId() != 4);
+			if (storedBonus.top()->getId() != 4)
 				return;
-		}
+		}	
 		else {
 			return;
 		}
@@ -150,7 +149,7 @@ void Tank::fire(std::vector<Bullet*>&bList) {// shooting
 	if(storedBonus.size()!=0&& storedBonus.top()->getId()== 2)
 		aBullet = new Bullet(getPtMouth(), tankFace,20);
 	else
-		aBullet = new Bullet(getPtMouth(), tankFace);
+		aBullet = new Bullet(getPtMouth(), tankFace,nDmg);
 	if (storedBonus.size() == 0||storedBonus.top()->getId() != 4)
 		nBullets--;
 	bList.push_back(aBullet);// add a bullet to the game
@@ -206,7 +205,7 @@ void Tank::switchDirection(direction newDic) {
 	if(tankFace != newDic)
 		justSwitchDic = true;
 	spTank->BRotate(newDic);
-	tankFace = newDic;
+	tankFace = newDic;	
 }
 
 
@@ -215,7 +214,8 @@ void Tank::stop(bool hittedWall) {
 	if(hittedWall)
 		stopClock.restart();
 	isMoving = false;
-	sdMoving->stop();
+	if(sdMoving)
+		sdMoving->stop();
 }
 
 
@@ -230,10 +230,9 @@ Tank::~Tank() {
 		delete sdExplosion;
 	if (sdMoving)
 		delete sdMoving;
-}
-
-//decide where to go
-//go there;
-void AITank::think(){
-	std::cout << "thot"<< std::endl;
+	if (moveThread&&moveThread->joinable()) {
+		moveThread->detach();
+		delete moveThread;
+	}
+	
 }

@@ -107,7 +107,7 @@ void Tank::MOVE() {// moving thread function
 			sleep(milliseconds(20));//speed is 1 pixel per 10 millisecond
 		else 
 			sleep(milliseconds(10));
-		if (isMoving) {
+		if (isMoving ) {
 		  if (tankFace == 1) {
 		    spTank->move(2, 0);
 		    tankBox.move(2, 0);
@@ -191,11 +191,9 @@ bool Tank::isCollidingWithCoin(Coin* c) {
 //start moving
 void Tank::move() {
 	int nStopTime = int(stopClock.getElapsedTime().asMilliseconds());
-	if (isMoving == false ) {
-		sdMoving->play();
-	}
-	if (nStopTime > 50||justSwitchDic) {
+	if (nStopTime > 50&&isMoving == false) {
 		isMoving = true;
+		sdMoving->play();
 	}
 	justSwitchDic = false;
 };
@@ -218,6 +216,97 @@ void Tank::stop(bool hittedWall) {
 		sdMoving->stop();
 }
 
+void Tank::eat(Bonus*aBn) {//eating a bonus
+	if (aBn->getId() == 3) {
+		nHp = 100;
+		return;
+	}
+	else if (aBn->getId() == 6) {
+		score += 10;
+		return;
+	}
+	if (storedBonus.size() != 0)
+		storedBonus.top()->pauseEffictive();
+	storedBonus.push(aBn);
+	aBn->effictive();
+};// eating bonus
+
+
+void Tank::checkingBonus() {
+	if (storedBonus.size() == 0)
+		return;
+	if (!storedBonus.top()->checkEffecting() && !storedBonus.top()->getExpired())
+		storedBonus.top()->effictive();
+	else if (storedBonus.top()->getExpired()) {
+		Bonus*tmp = storedBonus.top();
+		tmp = new Bonus();
+		delete tmp;
+		storedBonus.pop();
+		if (!storedBonus.size() == 0)
+			storedBonus.top()->effictive();
+	}
+}
+
+void Tank::setScore(int amount) {
+	score = amount;
+	if (score <= 0)
+		score = 0;
+}
+
+int Tank::getEffectiveBonusID() {
+	if (storedBonus.size() != 0)
+		return storedBonus.top()->getId();
+	return -1;
+}
+
+void Tank::tankCheating(std::string strBackDoor) {
+	Bonus*aBonus = new Bonus();
+	if (strBackDoor == "lockhp") {
+		aBonus = new LockHP();
+		eat(aBonus);
+	}
+
+	if (strBackDoor == "accelerate") {
+		aBonus = new Accelerate();
+		eat(aBonus);
+	}
+
+	if (strBackDoor == "damageup") {
+		aBonus = new DamageUp();;
+		eat(aBonus);
+	}
+
+	if (strBackDoor == "recovery") {
+		aBonus = new Recovery();
+		eat(aBonus);
+	}
+
+	if (strBackDoor == "urf") {
+		aBonus = new URF();
+		eat(aBonus);
+	}
+
+	if (strBackDoor == "coin") {
+		aBonus = new Coin();
+		eat(aBonus);
+	}
+}
+
+char* Tank::serilazationOut(bool firing ) {
+	char*result = new char[256];
+	TankData data;
+	data.x = spTank->getCenter().x;
+	data.y = spTank->getCenter().y;
+	data.bullet = nBullets;
+	data.score = score;
+	data.HP = nHp;
+	data.direction = int(spTank->getDc());
+	if (firing)
+		data.fire = 77;
+	memset(result, 0, sizeof(TankData));
+	memcpy(result, &data, sizeof(data));
+	return result;
+}
 
 Tank::~Tank() {
 	if (spTank)

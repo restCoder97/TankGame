@@ -91,6 +91,11 @@ void SingleGame::checkKeyboard() {// come to here if keyboard pressed
 		playerTank->switchDirection(direction::right);
 		playerTank->move();
 	}
+	for (unsigned i = 0; i < gameMap->vBricks.size(); i++) {
+		if (i < gameMap->vBricks.size() &&
+			gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(),& playerTank->getFrontPoints()))
+			playerTank->stop(true);
+	}
 	checkTanks();
 }
 
@@ -131,9 +136,7 @@ void SingleGame::keyboardDown(Event event, bool keyboard) {//come to here when k
 					ai->setHP(0);
 				}
 			}
-
 		}
-
 
 		playerTank->stop();
 		for (AITank* aiTank : AiTankList)
@@ -170,6 +173,11 @@ void SingleGame::keyboardDown(Event event, bool keyboard) {//come to here when k
 		playerTank->switchDirection(direction::right);
 		if (player != 1)
 			playerTank->move();
+	}
+	for (unsigned i = 0; i < gameMap->vBricks.size(); i++) {
+		if (i < gameMap->vBricks.size() &&
+			gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(), &playerTank->getFrontPoints()))
+			playerTank->stop(true);
 	}
 	checkTanks();
 }
@@ -272,124 +280,125 @@ void SingleGame::fly() {// thread function, move bullets
 
 void SingleGame::checkTanks() {// check tank for collision or running out of screen;
 
-		AITank* aiTank;
-		for (int i = AiTankList.size() - 1; i >= 0; i--) {
-			aiTank = AiTankList[i];
-			if (aiTank->getHp() <= 0) {
-				deadTank = aiTank;
-				AiTankList.erase(AiTankList.begin() + i);
-				deadTank->setGameOver();
-				delete deadTank;
-			}
-		}
-
-		if (playerTank->getHp() <= 0) {
-			deadTank = playerTank;
-			std::string text = "AITank Win\n Score: ";
-			text.append(to_string(playerTank->getScore()));
-			gameOverText.setString(text);
-			gameOverText.setFillColor(Color::Red);
-			gameOver = true;
-			while (!flyThreadEnd) {
-				sleep(milliseconds(10));
-			}
+	AITank* aiTank;
+	for (int i = AiTankList.size() - 1; i >= 0; i--) {
+		aiTank = AiTankList[i];
+		if (aiTank->getHp() <= 0) {
+			deadTank = aiTank;
+			AiTankList.erase(AiTankList.begin() + i);
 			deadTank->setGameOver();
+			delete deadTank;
 		}
+	}
 
-		else if (AiTankList.size() == 0) {
-			std::string text = "YOU WIN \n Score: ";
-			text.append(to_string(playerTank->getScore()));
-			gameOverText.setString(text);
-			gameOverText.setFillColor(Color::Green);
-			gameOver = true;
-			while (!flyThreadEnd) {
-				sleep(milliseconds(10));
-			}
+	if (playerTank->getHp() <= 0) {
+		deadTank = playerTank;
+		std::string text = "AITank Win\n Score: ";
+		text.append(to_string(playerTank->getScore()));
+		gameOverText.setString(text);
+		gameOverText.setFillColor(Color::Red);
+		gameOver = true;
+		while (!flyThreadEnd) {
+			sleep(milliseconds(10));
 		}
+		deadTank->setGameOver();
+	}
 
-		if (gamePause && !gameOver) {
-			for (AITank* aiTank : AiTankList) {
-				aiTank->stop();
-			}
-			return;
+	else if (AiTankList.size() == 0) {
+		std::string text = "YOU WIN \n Score: ";
+		text.append(to_string(playerTank->getScore()));
+		gameOverText.setString(text);
+		gameOverText.setFillColor(Color::Green);
+		gameOver = true;
+		while (!flyThreadEnd) {
+			sleep(milliseconds(10));
 		}
+	}
+
+	if (gamePause && !gameOver) {
+		for (AITank* aiTank : AiTankList) {
+			aiTank->stop();
+		}
+		return;
+	}
+
+	for (AITank* aiTank : AiTankList) {
+		vector<BPoint>tmp2 = aiTank->getFrontPoints();
+		if (playerTank->isContainItems(aiTank->getPtMouth(), &tmp2) || aiTank->outOfScreen())
+		{
+			aiTank->think(true);
+		}
+	}
+
+	vector<BPoint>tmp1 = playerTank->getFrontPoints();
+	for (AITank* aiTank : AiTankList) {
+		if (aiTank->isContainItems(playerTank->getPtMouth(), &tmp1) || playerTank->outOfScreen()) {
+			playerTank->stop(true);
+		}
+	}
+
+	for (unsigned i = 0; i < gameMap->vBricks.size(); i++) {
+		if (i < gameMap->vBricks.size() &&
+			gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
+ 			playerTank->stop(true);
 
 		for (AITank* aiTank : AiTankList) {
 			vector<BPoint>tmp2 = aiTank->getFrontPoints();
-			if (playerTank->isContainItems(aiTank->getPtMouth(), &tmp2) || aiTank->outOfScreen())
-			{
-				aiTank->think(true);
-			}
-		}
-
-		vector<BPoint>tmp1 = playerTank->getFrontPoints();
-		for (AITank* aiTank : AiTankList) {
-			if (aiTank->isContainItems(playerTank->getPtMouth(), &tmp1) || playerTank->outOfScreen()) {
-				playerTank->stop(true);
-			}
-		}
-
-		for (unsigned i = 0; i < gameMap->vBricks.size(); i++) {
 			if (i < gameMap->vBricks.size() &&
-				gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
-				playerTank->stop(true);
+				gameMap->vBricks[i]->sprite.isContaining(aiTank->getPtMouth(), &tmp2))
+				aiTank->think(true);
+		}
+	}
 
-			for (AITank* aiTank : AiTankList) {
-				vector<BPoint>tmp2 = aiTank->getFrontPoints();
-				if (i<gameMap->vBricks.size()&&
-					gameMap->vBricks[i]->sprite.isContaining(aiTank->getPtMouth(), &tmp2))
-					aiTank->think(true);
-			}
+	for (unsigned i = 0; i < gameMap->vMetals.size(); i++) {
+		if (gameMap->vMetals[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
+			playerTank->stop(true);
+		for (AITank* aiTank : AiTankList) {
+			vector<BPoint>tmp2 = aiTank->getFrontPoints();
+			if (gameMap->vMetals[i]->sprite.isContaining(aiTank->getPtMouth(), &tmp2))
+				aiTank->think(true);
+		}
+	}
+	for (unsigned i = 0; i < BonusList.size(); i++) {
+		if (BonusList[i]->isContaining(playerTank->getPtMouth(), &tmp1)) {
+			playerTank->eat(BonusList[i]);
+			BonusList.erase(BonusList.begin() + i);
 		}
 
-		for (unsigned i = 0; i < gameMap->vMetals.size(); i++) {
-			if (gameMap->vMetals[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
-				playerTank->stop(true);
-			for (AITank* aiTank : AiTankList) {
-				vector<BPoint>tmp2 = aiTank->getFrontPoints();
-				if (gameMap->vMetals[i]->sprite.isContaining(aiTank->getPtMouth(), &tmp2))
-					aiTank->think(true);
-			}
+	}
+
+	playerTank->checkingBonus();
+
+	if (gameOver) {
+		playerTank->stop();
+		for (AITank* aiTank : AiTankList) {
+			aiTank->setGameOver();
+			aiTank->stop();
 		}
-		for (unsigned i = 0; i < BonusList.size(); i++) {
-			if (BonusList[i]->isContaining(playerTank->getPtMouth(), &tmp1)) {
-				playerTank->eat(BonusList[i]);
-				BonusList.erase(BonusList.begin() + i);
-			}
-
+		playerTank->setGameOver();
+		if (!didWriteScore) {
+			Date newDate;
+			Score newScore(playerTank->getName(), playerTank->getScore(), newDate);
+			char fileName[] = "gameRecord.txt";
+			eraseScoresFile(fileName); //remove previous game record
+			writeScoresToFile(fileName, &newScore, 1);
+			doScores();
+			didWriteScore = true;
 		}
+			
+	}
 
-		playerTank->checkingBonus();
+	std::ostringstream ssScoreP1;
+	ssScoreP1.str(""); //refresh score label
+	ssScoreP1 << " Pts: " << playerTank->getScore();
+	lblP1Score.setString(ssScoreP1.str());
 
-		if (gameOver) {
-			playerTank->stop();
-			for (AITank* aiTank : AiTankList) {
-				aiTank->setGameOver();
-				aiTank->stop();
-			}
-			playerTank->setGameOver();
-			if (!didWriteScore) {
-				Date newDate;
-				Score newScore(playerTank->getName(), playerTank->getScore(), newDate);
-				char fileName[] = "gameRecord.txt";
-				eraseScoresFile(fileName); //remove previous game record
-				writeScoresToFile(fileName, &newScore, 1);
-				doScores();
-				didWriteScore = true;
-			}
-			//animateThread = new std::thread(&SingleGame::playBoom, this);
-		}
-
-		std::ostringstream ssScoreP1;
-		ssScoreP1.str(""); //refresh score label
-		ssScoreP1 << " Pts: " << playerTank->getScore();
-		lblP1Score.setString(ssScoreP1.str());
-
-		std::ostringstream str1HP, str2Hp;
-		std::string hp = " Hp: ";
-		str1HP << hp << playerTank->getHp();
-		tank1Hp.setString(str1HP.str());
-		std::ostringstream str1Bullet, str2Bullet;
+	std::ostringstream str1HP, str2Hp;
+	std::string hp = " Hp: ";
+	str1HP << hp << playerTank->getHp();
+	tank1Hp.setString(str1HP.str());
+	std::ostringstream str1Bullet, str2Bullet;
+		
 }
 
 
@@ -397,7 +406,7 @@ SingleGame::SingleGame(std::string Name) {
 	gameWindow = new RenderWindow(VideoMode(1100, 1000), "SingleGame");// init window
 	flyThread = new std::thread(&SingleGame::fly, this);// init fly thread
 	GIFThread = new std::thread(&SingleGame::playExplosion, this);
-
+	
 	gameMap = new GameMap();
 	playerTank = new Tank(BPoint(500, 900), direction::top, BSize(50, 50), Color(100, 255, 100, 255));//init player Tank color:r,g,b,a
 	playerTank->setName(Name);
@@ -475,14 +484,12 @@ SingleGame::SingleGame(std::string Name) {
 	tank1Hp = BText("", Color::Green, BPoint(1000, 0), MyFont, 35);
 	gameOverText = BText("", Color::Yellow, BPoint(0, 0), MyFont, 50);
 	gameOverText.GoCenter(gameRect);
-	//checkTankThread = new thread(&SingleGame::checkTanks, this);
+	
 }
 
 void SingleGame::play() { // call this function to start playing
 	gameWindow->requestFocus();
 	gameClock.restart();
-
-
 	while (gameWindow->isOpen())
 	{
 		if (!gameOver) {

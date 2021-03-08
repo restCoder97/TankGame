@@ -336,7 +336,6 @@ void Game::update() {// re-painting game board with new dates.
 		gameWindow->draw(aBullet->spBullet->getSprite());
 	}
 
-
 	gameWindow->draw(dashBoard);
 	gameWindow->draw(tank1Hp.getText());
 	gameWindow->draw(tank2Hp.getText());
@@ -352,14 +351,7 @@ void Game::update() {// re-painting game board with new dates.
 		delete tank2Bonus;
 	}
 
-	for (unsigned int i = 0; i < playerTank->getFrontPoints().size(); i++) {
-			sf::Vertex point(playerTank->getFrontPoints()[i].getV2f(), sf::Color::Yellow);
-			gameWindow->draw(&point, 10, sf::Points);
-	}
-	for (unsigned int i = 0; i < player2Tank->getFrontPoints().size(); i++) {
-			sf::Vertex point(player2Tank->getFrontPoints()[i].getV2f(), sf::Color::Yellow);
-			gameWindow->draw(&point, 10, sf::Points);
-	}
+	
 
 	//coin draw
 	if (player2Tank->storedBonus.size() != 0) {

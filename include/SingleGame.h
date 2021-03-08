@@ -9,11 +9,11 @@
 using namespace sf;
 
 
-class SingleGame 
+class SingleGame
 {
 	RenderWindow*gameWindow;
 	Tank*playerTank;
-	
+
 	std::thread*flyThread = nullptr;// execute Bullets' move
 	std::thread*animateThread = nullptr;
 	std::thread*GIFThread = nullptr;
@@ -47,11 +47,11 @@ class SingleGame
 	vector<GIF*>boomGifs = {};
 	Mutex mMutexExplosion;
 	BLineEdit cheatCode2;
-	void CheckKeyboard();
-	void KeyboardDown(Event event, bool keyboard = true);
-	void KeyboardReleased(Event event);
+	void checkKeyboard();
+	void keyboardDown(Event event, bool keyboard = true);
+	void keyboardReleased(Event event);
 	void checkBullets();
-	void FLY();
+	void fly();
 	void update();
 	void checkTanks();
 	void playBoom();
@@ -63,8 +63,8 @@ protected:
 	Event event;
 	std::vector<AITank*>AiTankList = {};
 	bool didWriteScore = false;
-	
-	
+
+
 
 public:
 	SingleGame(std::string Name);

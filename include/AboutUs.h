@@ -17,11 +17,11 @@ private:
 	RenderWindow* aboutWindow;
 	BText devNames;
 	BText devHeader;
-	Font* MyFont;
+	Font* myFont;
 public:
 	AboutUs() {
-		MyFont = new Font();
-		if (!MyFont->loadFromFile("fonts/font1.otf")) { //load font
+		myFont = new Font();
+		if (!myFont->loadFromFile("fonts/font1.otf")) { //load font
 			std::cerr << "Could not load font " << "fonts/font2.ttf" << std::endl;
 			std::exit(1);
 		}

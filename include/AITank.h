@@ -66,7 +66,7 @@ public:
 		BPoint aPoint = getPtMouth();
 		Bullet*aBullet;
 		aBullet = new Bullet(getPtMouth(), tankFace, 40);
-		aBullet->AIBullet = true;
+		aBullet->aiBullet = true;
 		bList.push_back(aBullet);
 		sdFire->play();
 	}

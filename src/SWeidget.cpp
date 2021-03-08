@@ -49,8 +49,8 @@ Color SWidget::getBackgroundColor() {
 }
 
 void SWidget::setText(string text, int fontSize, Color textColor, BPoint pt) {
-	font.loadFromFile("fonts\\font2.ttf");
-	title = new BText(text, textColor, BPoint(0, 0), nullptr, fontSize, "fonts//font2.ttf");
+	font.loadFromFile("fonts/font2.ttf");
+	title = new BText(text, textColor, BPoint(0, 0), nullptr, fontSize, "fonts/font2.ttf");
 	FloatRect tmp = FloatRect(this->getPosition().x, this->getPosition().y, bSize.width, bSize.height);//tmp is the bounding rect
 	title->GoCenter(tmp);//this will set the text's Align
 }

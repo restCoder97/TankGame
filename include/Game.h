@@ -36,7 +36,7 @@ protected:
 	bool forcedEnd;
 	BText pauseText;
 	RectangleShape pauseView;
-	Font*MyFont;
+	Font*myFont;
 	bool flyThreadEnd = false;
 	bool boomPlayed;
 	std::vector<std::string>strExplosion = { "Explosion_A.png","Explosion_B.png" ,
@@ -52,7 +52,7 @@ protected:
 	SButton BtContinue;
 	BLineEdit cheatCode1;
 	BLineEdit cheatCode2;
-	
+
 	Tank*deadTank= nullptr;
 	GameMap*gameMap;
 	int stickConnected = 0;
@@ -64,25 +64,22 @@ protected:
 	std::vector<Bullet*>bulletList;
 	std::vector<Coin*> coinVec;
 
-	void CheckKeyboard();
-	void KeyboardDown(Event event, bool keyboard = true,bool textEntered = false);
-	void KeyboardReleased(Event event);
+	void checkKeyboard();
+	void keyboardDown(Event event, bool keyboard = true,bool textEntered = false);
+	void keyboardReleased(Event event);
 	void checkBullets();
 	void update();
 	void checkTanks();
 	bool gamePause=false;
-	void GenerateBonus();
+	void generateBonus();
 	void mouseButtonDown(Event e);
 
 public:
-	
+
 	void playBoom();
 	void playExplosion();
 	Game();
-	void FLY();
+	void fly();
 	~Game();
 	void play();
 };
-
-
-

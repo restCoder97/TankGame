@@ -11,6 +11,6 @@ Bullet::Bullet(BPoint startPoint, direction dic,unsigned damage) {
 	nDamage = damage;
 }
 
-BPoint Bullet::getPeekPoint() {
+BPoint Bullet::getPeakPoint() {
 	return spBullet->getPeakPoint();
 }

@@ -40,14 +40,14 @@ protected:
 	std::thread * moveThread;
 	std::string Name = "";
 	int nDmg = 10;
-	
+
 
 public:
 	std::stack<Bonus*>storedBonus;
 	bool getisMoving() {
 		return isMoving; };// start moving
 	int getHp() { return nHp; }
-    int getScore() { 
+  int getScore() {
 		int i = 0;
 		return score;
 	}
@@ -60,7 +60,7 @@ public:
 	std::vector<BPoint>getFrontPoints();
 	//return tank's top left point
 	BPoint getTopLeft();
-	void MOVE();
+	void MOVE(); //the only major non-styled part
 	void fire(std::vector<Bullet*>&bList);
 	std::string getName() { return Name; };
 	void setName(std::string str) { Name = str; };
@@ -68,8 +68,8 @@ public:
 	// get damage
 	void damaged(int damage);
         //score functions
-    void addScore(unsigned int);
-    bool isCollidingWithCoin(Coin*);
+  void addScore(unsigned int);
+  bool isCollidingWithCoin(Coin*);
 	void eat(Bonus*aBn) {
 		if (aBn->getId() == 3) {
 			nHp = 100;
@@ -99,7 +99,7 @@ public:
 				storedBonus.top()->effictive();
 		}
 	}
-	
+
 	//start moving
 	void move();
 	int getBulletAmount() {
@@ -184,4 +184,3 @@ public:
 
 	~Tank();
 };
-

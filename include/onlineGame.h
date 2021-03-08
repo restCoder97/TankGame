@@ -2,7 +2,7 @@
 #include"Game.h"
 class ServerGame :public Game {
 	sf::IpAddress server;
-	std::thread*threadRecive;
+	std::thread*threadReceive;
 	std::thread*threadSend;
 	sf::TcpSocket socket;
 	std::thread*watingThread;
@@ -15,10 +15,10 @@ public:
 		isOnLineGame = true;
 		gamePause = true;
 		mPort = port;
-		cout << "Waiting Clint Connect!" << endl;
+		cout << "Waiting Client Connect!" << endl;
 		watingThread = new std::thread(&ServerGame::waiting, this);
 		threadSend = new std::thread(&ServerGame::sendData, this);
-		threadRecive = new std::thread(&ServerGame::reciveData, this);
+		threadReceive = new std::thread(&ServerGame::receiveData, this);
 		gameWindow->setTitle("Server Game");
 		pauseText.setString("Waiting Connection!");
 	}
@@ -27,28 +27,28 @@ public:
 	~ServerGame() {
 		sleep(seconds(1));
 		threadSend->detach();
-		threadRecive->detach();
+		threadReceive->detach();
 		watingThread->detach();
 		if (threadSend)
 			delete threadSend;
-		if (threadRecive)
-			delete threadRecive;
+		if (threadReceive)
+			delete threadReceive;
 		if (watingThread)
 			delete watingThread;
 		threadSend = nullptr;
-		threadRecive = nullptr;
+		threadReceive = nullptr;
 		watingThread = nullptr;
 	}
 
 	void waiting() {
 		auto b = listener.listen(mPort);
 		auto a = listener.accept(socket);
-		cout << "A Clint connected" << endl;
+		cout << "A Client connected" << endl;
 		isWaiting = false;
 		gamePause = false;
 	}
 
-	void reciveData() {
+	void receiveData() {
 		while (!gameOver) {
 			std::size_t received;
 			char*strData = new char[256];
@@ -81,11 +81,11 @@ public:
 		}
 	}
 
-	void KeyboardDown(Event event, bool keyboard = true, bool textEnterd = false) {//come to here when keyboard button down or joystick moved;
+	void keyboardDown(Event event, bool keyboard = true, bool textEnterd = false) {//come to here when keyboard button down or joystick moved;
 
 		auto keyID = event.text.unicode;
 		Keyboard::Key a = event.key.code;
-		
+
 
 		auto joystick = event.joystickMove.axis;
 		auto pt = event.joystickMove.position;
@@ -118,7 +118,7 @@ public:
 		}
 	}
 
-	void KeyboardReleased(Event event) {
+	void keyboardReleased(Event event) {
 		Keyboard::Key aKey = event.key.code;
 
 		if (event.joystickButton.joystickId == 0 && event.joystickButton.button == 2) {
@@ -192,18 +192,18 @@ public:
 						gameWindow->close();
 						break;
 					}
-						
+
 					if (event->type == sf::Event::EventType::KeyPressed || event->type == sf::Event::EventType::TextEntered) {
 						if (event->type == sf::Event::EventType::TextEntered)
-							KeyboardDown(*event, false, true);
+							keyboardDown(*event, false, true);
 						else
-							KeyboardDown(*event, true);
+							keyboardDown(*event, true);
 					}
 
 					if (event->type == sf::Event::EventType::JoystickMoved)
-						KeyboardDown(*event, false);
+						keyboardDown(*event, false);
 					if (event->type == sf::Event::EventType::KeyReleased || event->type == sf::Event::EventType::JoystickButtonReleased)//|| Event::EventType::JoystickButtonPressed)
-						ServerGame::KeyboardReleased(*event);
+						ServerGame::keyboardReleased(*event);
 					if (event->type == sf::Event::EventType::MouseButtonPressed) {
 						mouseButtonDown(*event);
 					}
@@ -225,27 +225,27 @@ public:
 
 
 
-class ClintGame :public Game {
+class ClientGame :public Game {
 	sf::IpAddress server;
-	std::thread*threadRecive;
+	std::thread*threadReceive;
 	std::thread*threadSend;
 	sf::TcpSocket*socket;
 
 
 public:
-	ClintGame() = default;
-	ClintGame(IpAddress*ipA,TcpSocket*sckt) :Game() {
+	ClientGame() = default;
+	ClientGame(IpAddress*ipA,TcpSocket*sckt) :Game() {
 		server = *ipA;
 		socket = sckt;
 		isOnLineGame = true;
-		threadRecive = new std::thread(&ClintGame::reciveData, this);
-		threadSend = new std::thread(&ClintGame::sendData, this);
-		gameWindow->setTitle("Clint Game");
+		threadReceive = new std::thread(&ClientGame::receiveData, this);
+		threadSend = new std::thread(&ClientGame::sendData, this);
+		gameWindow->setTitle("Client Game");
 	}
-	~ClintGame() {
-		if (threadRecive->joinable()) {
-			threadRecive->detach();
-			delete threadRecive;
+	~ClientGame() {
+		if (threadReceive->joinable()) {
+			threadReceive->detach();
+			delete threadReceive;
 		}
 		if (threadSend->joinable()) {
 			threadSend->detach();
@@ -264,7 +264,7 @@ public:
 		}
 	}
 
-	void reciveData() {
+	void receiveData() {
 		while (!gameOver) {
 			TankData rData;
 			std::size_t received;
@@ -290,11 +290,11 @@ public:
 	}
 
 
-	void KeyboardDown(Event event, bool keyboard = true, bool textEnterd = false) {//come to here when keyboard button down or joystick moved;
+	void keyboardDown(Event event, bool keyboard = true, bool textEnterd = false) {//come to here when keyboard button down or joystick moved;
 
 		auto keyID = event.text.unicode;
 		Keyboard::Key a = event.key.code;
-		
+
 		auto joystick = event.joystickMove.axis;
 		auto pt = event.joystickMove.position;
 		auto player = event.joystickMove.joystickId;
@@ -330,7 +330,7 @@ public:
 	}
 
 
-	void KeyboardReleased(Event event) {// come to here if keyboard realeased
+	void keyboardReleased(Event event) {// come to here if keyboard realeased
 		Keyboard::Key aKey = event.key.code;
 
 
@@ -353,7 +353,7 @@ public:
 
 		else if (aKey == sf::Keyboard::W || aKey == sf::Keyboard::S || aKey == sf::Keyboard::A || aKey == sf::Keyboard::D) {
 			player2Tank->stop();
-			CheckKeyboard();
+			checkKeyboard();
 		}
 
 		if (aKey == sf::Keyboard::Space) {
@@ -381,18 +381,18 @@ public:
 						sleep(milliseconds(1000));
 						break;
 					}
-						
+
 					if (event->type == sf::Event::EventType::KeyPressed || event->type == sf::Event::EventType::TextEntered) {
 						if (event->type == sf::Event::EventType::TextEntered)
-							KeyboardDown(*event, false, true);
+							keyboardDown(*event, false, true);
 						else
-							KeyboardDown(*event, true);
+							keyboardDown(*event, true);
 					}
 
 					if (event->type == sf::Event::EventType::JoystickMoved)
-						KeyboardDown(*event, false);
+						keyboardDown(*event, false);
 					if (event->type == sf::Event::EventType::KeyReleased || event->type == sf::Event::EventType::JoystickButtonReleased)//|| Event::EventType::JoystickButtonPressed)
-						ClintGame::KeyboardReleased(*event);
+						ClientGame::keyboardReleased(*event);
 					if (event->type == sf::Event::EventType::MouseButtonPressed) {
 						mouseButtonDown(*event);
 					}

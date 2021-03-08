@@ -56,7 +56,7 @@ void SingleGame::GenerateBonus() {
 	BonusList.push_back(aBonus);
 }
 
-void SingleGame::CheckKeyboard() {// come to here if keyboard pressed
+void SingleGame::checkKeyboard() {// come to here if keyboard pressed
 	if (gamePause || gameOver)
 		return;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
@@ -94,7 +94,7 @@ void SingleGame::CheckKeyboard() {// come to here if keyboard pressed
 	checkTanks();
 }
 
-void  SingleGame::KeyboardReleased(Event event) {// come to here if keyboard realeased
+void  SingleGame::keyboardReleased(Event event) {// come to here if keyboard realeased
 	Keyboard::Key aKey = event.key.code;
 
 	if (event.joystickButton.joystickId == 1 && event.joystickButton.button == 1)
@@ -104,16 +104,16 @@ void  SingleGame::KeyboardReleased(Event event) {// come to here if keyboard rea
 
 	else if (aKey == sf::Keyboard::W || aKey == sf::Keyboard::S || aKey == sf::Keyboard::A || aKey == sf::Keyboard::D) {
 		playerTank->stop();
-		CheckKeyboard();
+		checkKeyboard();
 	}
-	
+
 	if (aKey == sf::Keyboard::Space) {
 		playerTank->fire(bulletList);
 	}
-	
+
 }
 
-void SingleGame::KeyboardDown(Event event, bool keyboard) {//come to here when keyboard button down or joystick moved;
+void SingleGame::keyboardDown(Event event, bool keyboard) {//come to here when keyboard button down or joystick moved;
 
 	auto keyID = event.text.unicode;
 	Keyboard::Key a = event.key.code;
@@ -131,9 +131,9 @@ void SingleGame::KeyboardDown(Event event, bool keyboard) {//come to here when k
 					ai->setHP(0);
 				}
 			}
-				
+
 		}
-			
+
 
 		playerTank->stop();
 		for (AITank* aiTank : AiTankList)
@@ -184,7 +184,7 @@ void SingleGame::checkBullets() {// traverse bullet list, check bullets' positio
 	bool stop = false;
 	for (unsigned int i = 0; i < bulletList.size() && !stop; i++) {
 		tmp = bulletList[i];
-		bulletPeak = tmp->getPeekPoint();
+		bulletPeak = tmp->getPeakPoint();
 		if (bulletPeak.x > 1000 || bulletPeak.y >= 1000 || bulletPeak.x <= 0 || bulletPeak.y <= 0) {
 			bulletList.erase(bulletList.begin() + i);
 			delete tmp;
@@ -199,7 +199,7 @@ void SingleGame::checkBullets() {// traverse bullet list, check bullets' positio
 		else if (AiTankList.size()) {
 			for (AITank* aiTank : AiTankList) {
 				//Bullet * tmp = bulletList[i];
-				if (aiTank->isContainItems(bulletPeak) && !tmp->AIBullet) {
+				if (aiTank->isContainItems(bulletPeak) && !tmp->aiBullet) {
 					bulletList.erase(bulletList.begin() + i);
 					aiTank->damaged(tmp->nDamage);
 					if (aiTank->getHp() <= 0) {
@@ -245,7 +245,7 @@ void SingleGame::checkBullets() {// traverse bullet list, check bullets' positio
 	}
 }
 
-void SingleGame::FLY() {// thread function, move bullets
+void SingleGame::fly() {// thread function, move bullets
 	while (!gameOver) {
 		sleep(milliseconds(10));
 		if (!gamePause) {
@@ -271,7 +271,7 @@ void SingleGame::FLY() {// thread function, move bullets
 
 
 void SingleGame::checkTanks() {// check tank for collision or running out of screen;
-	
+
 		AITank* aiTank;
 		for (int i = AiTankList.size() - 1; i >= 0; i--) {
 			aiTank = AiTankList[i];
@@ -330,7 +330,7 @@ void SingleGame::checkTanks() {// check tank for collision or running out of scr
 		}
 
 		for (unsigned i = 0; i < gameMap->vBricks.size(); i++) {
-			if (i < gameMap->vBricks.size() && 
+			if (i < gameMap->vBricks.size() &&
 				gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp1))
 				playerTank->stop(true);
 
@@ -395,9 +395,9 @@ void SingleGame::checkTanks() {// check tank for collision or running out of scr
 
 SingleGame::SingleGame(std::string Name) {
 	gameWindow = new RenderWindow(VideoMode(1100, 1000), "SingleGame");// init window
-	flyThread = new std::thread(&SingleGame::FLY, this);// init fly thread
+	flyThread = new std::thread(&SingleGame::fly, this);// init fly thread
 	GIFThread = new std::thread(&SingleGame::playExplosion, this);
-	
+
 	gameMap = new GameMap();
 	playerTank = new Tank(BPoint(500, 900), direction::top, BSize(50, 50), Color(100, 255, 100, 255));//init player Tank color:r,g,b,a
 	playerTank->setName(Name);
@@ -488,7 +488,7 @@ void SingleGame::play() { // call this function to start playing
 		if (!gameOver) {
 			checkBullets();
 			checkTanks();
-			CheckKeyboard();
+			checkKeyboard();
 			while (gameWindow->pollEvent(event))// listening events
 			{
 				if (event.type == Event::EventType::JoystickConnected)
@@ -501,13 +501,13 @@ void SingleGame::play() { // call this function to start playing
 				}
 
 				if (event.type == sf::Event::EventType::KeyPressed )
-					KeyboardDown(event, true);
+					keyboardDown(event, true);
 				if(event.type == sf::Event::EventType::TextEntered)
-					KeyboardDown(event, false);
+					keyboardDown(event, false);
 				if (event.type == sf::Event::EventType::JoystickMoved)
-					KeyboardDown(event, false);
+					keyboardDown(event, false);
 				if (event.type == sf::Event::EventType::KeyReleased || event.type == sf::Event::EventType::JoystickButtonReleased)//|| Event::EventType::JoystickButtonPressed)
-					KeyboardReleased(event);
+					keyboardReleased(event);
 			}
 			int time = int(gameClock.getElapsedTime().asSeconds());
 			int r = rand();
@@ -564,7 +564,7 @@ void SingleGame::update() {// re-painting game board with new dates.
 	for (unsigned int i = 0; i < bulletList.size(); i++) {// draw bullets one by one
 		gameWindow->draw(bulletList[i]->spBullet->getSprite());
 	}
-	
+
 	gameWindow->draw(dashBoard);
 	gameWindow->draw(tank1Hp.getText());
 

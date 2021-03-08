@@ -41,7 +41,7 @@ class MainPage {
 	BLineEdit ipAddress = BLineEdit(BPoint(1691 / 2, 125), windowInstance, "127.0.0.1", BSize(130, 30));
 	BLineEdit portNumber = BLineEdit(BPoint(1691 / 2, 175), windowInstance, "35000", BSize(50, 30));
 	BLineEdit portNumber2 = BLineEdit(BPoint(1800 / 2, 553 / 2), windowInstance, "35000", BSize(50, 30));
-	SButton join = SButton(BSize(81 / 2, 29 / 2), BPoint(1800 / 2, 441 / 2), 
+	SButton join = SButton(BSize(81 / 2, 29 / 2), BPoint(1800 / 2, 441 / 2),
 		Color::Transparent, "Join", windowInstance);
 	SButton create = SButton(BSize(149 / 2, 28 / 2), BPoint(1774 / 2, 661 / 2)
 		, Color::Transparent, "Create", windowInstance);
@@ -73,7 +73,7 @@ public:
 			cerr << "picture 3 not found " << endl;
 			exit(1);
 		}
-		
+
 		leftSprite = new BSprite(texture, BSize(319, 495), top, BPoint(111, 200));
 		middleSprite = new BSprite(texture2, BSize(471, 495), top, BPoint(650, 200));
 		rightSprite = new BSprite(texture3, BSize(273, 495), top, BPoint(0, 0));
@@ -132,7 +132,7 @@ public:
 	}
 
 	void pbJoinDown() {
-		
+
 		std::string aString = portNumber.getTitle();
 		std::string::size_type sz;
 		int port = stoi(aString, &sz);
@@ -145,7 +145,7 @@ public:
 			return;
 		}
 		aSound->stop();
-		ClintGame aGame(server,socket);
+		ClientGame aGame(server,socket);
 		aGame.play();
 		aSound->play();
 		delete server;
@@ -159,7 +159,7 @@ public:
 		int port = stoi(aString,&sz);
 		ServerGame aGame(port);
 		aGame.play();
-		aSound->play(); 
+		aSound->play();
 	}
 
 	void pbScoreDown() {
@@ -230,7 +230,7 @@ public:
 		windowInstance->draw(middleSprite->getSprite());
 		windowInstance->draw(rightSprite->getSprite());
 		windowInstance->draw(singlePlayer.getText());
-		
+
 		searchBox.show();
 		searchBox.draw(windowInstance);
 		play.draw(windowInstance);

@@ -20,7 +20,7 @@ void AboutUs::show() { //call to paint the leaderboard
 			//show header
 			std::ostringstream ssHeader;
 			ssHeader << "About the developers:";
-			devHeader = BText(ssHeader.str(), Color::Red, BPoint(100, 25), MyFont, 50);
+			devHeader = BText(ssHeader.str(), Color::Red, BPoint(100, 25), myFont, 50);
 			devHeader.setAlignment(FloatRect(0, 100, 800, 800), Align::centerTop);
 			aboutWindow->draw(devHeader.getText());
 
@@ -32,7 +32,7 @@ void AboutUs::show() { //call to paint the leaderboard
 				<< std::left << std::setw(20) << "Back End:    " << std::right << std::setw(20) << "    Vladimir Kataev\n"
 				<< std::setw(44) << std::right << "Michael Sanders\n"
 				<< std::left << std::setw(20)<<"\nInstructor: "<< std::right << std::setw(20)<<"    Joe Bentley\n";
-			devNames = BText(ssDevData.str(), Color::Green, BPoint(110, 90), MyFont);
+			devNames = BText(ssDevData.str(), Color::Green, BPoint(110, 90), myFont);
 			devNames.GoCenter(FloatRect(0, 100, 800, 800));
 			aboutWindow->draw(devNames.getText());
 

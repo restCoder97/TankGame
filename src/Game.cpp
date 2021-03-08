@@ -18,7 +18,7 @@ BonusType setType(int time=0) {
 	return BonusType(nType);
 }
 
-void Game::GenerateBonus() {
+void Game::generateBonus() {
 	BonusType type = setType(int(gameClock.getElapsedTime().asSeconds()));
 	Bonus*aBonus = nullptr;
 	aBonus = new Bonus();
@@ -60,7 +60,7 @@ void Game::GenerateBonus() {
 
 }
 
-void Game::CheckKeyboard() {// come to here if keyboard pressed
+void Game::checkKeyboard() {// come to here if keyboard pressed
 	if (gamePause||gameOver)
 		return;
 	if (sf::Keyboard::isKeyPressed(sf::Keyboard::W)) {
@@ -100,7 +100,7 @@ void Game::CheckKeyboard() {// come to here if keyboard pressed
 
 
 
-void Game::KeyboardDown(Event event, bool keyboard,bool textEnterd) {//come to here when keyboard button down or joystick moved;
+void Game::keyboardDown(Event event, bool keyboard,bool textEnterd) {//come to here when keyboard button down or joystick moved;
 
 	auto keyID = event.text.unicode;
 	Keyboard::Key a = event.key.code;
@@ -109,7 +109,7 @@ void Game::KeyboardDown(Event event, bool keyboard,bool textEnterd) {//come to h
 	if (gamePause|| gameOver) {
 		auto callbackTank1 = std::bind(&Tank::tankCheating, playerTank,_1);//placeholders c++ 11
 		auto callbackTank2 = std::bind(&Tank::tankCheating, player2Tank, _1);
-		
+
 		if ( keyboard &&textEnterd == false) {
 			if (cheatCode1.isFocusing) {
 				cheatCode1.readInput(a, callbackTank1);
@@ -129,7 +129,7 @@ void Game::KeyboardDown(Event event, bool keyboard,bool textEnterd) {//come to h
 				}
 			}
 		}
-		
+
 		playerTank->stop();
 		player2Tank->stop();
 		return;
@@ -198,7 +198,7 @@ void Game::KeyboardDown(Event event, bool keyboard,bool textEnterd) {//come to h
 }
 
 
-void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
+void Game::keyboardReleased(Event event) {// come to here if keyboard realeased
 	Keyboard::Key aKey = event.key.code;
 	if (event.joystickButton.joystickId == 1 && event.joystickButton.button == 2) {
 		player2Tank->addBullet((unsigned int)(player2Tank->getScore() / 5));
@@ -231,11 +231,11 @@ void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 
 	else if (aKey == sf::Keyboard::W || aKey == sf::Keyboard::S || aKey == sf::Keyboard::A || aKey == sf::Keyboard::D) {
 		player2Tank->stop();
-		CheckKeyboard();
+		checkKeyboard();
 	}
 	else if (aKey == sf::Keyboard::Up || aKey == sf::Keyboard::Down || aKey == sf::Keyboard::Left || aKey == sf::Keyboard::Right) {
 		playerTank->stop();
-		CheckKeyboard();
+		checkKeyboard();
 	}
 	if (aKey == sf::Keyboard::Space) {
 		player2Tank->fire(bulletList);
@@ -248,7 +248,7 @@ void Game::KeyboardReleased(Event event) {// come to here if keyboard realeased
 
 void Game::checkBullets() {// traverse bullet list, check bullets' position, if out of screen then delete it.
 	for (auto i = 0; i < int(bulletList.size()); i++) {
-		BPoint bulletPeak = bulletList[i]->getPeekPoint();
+		BPoint bulletPeak = bulletList[i]->getPeakPoint();
 		if (bulletPeak.x > 1000 || bulletPeak.y >= 1000 || bulletPeak.x <= 0 || bulletPeak.y <= 0) {
 			Bullet * tmp = bulletList[i];
 			bulletList.erase(bulletList.begin() + i);
@@ -298,7 +298,7 @@ void Game::checkBullets() {// traverse bullet list, check bullets' position, if 
 	}
 }
 
-void Game::FLY() {// thread function, move bullets
+void Game::fly() {// thread function, move bullets
 	while (!gameOver) {
 		sleep(milliseconds(10));
 		if (!gamePause) {
@@ -351,7 +351,7 @@ void Game::update() {// re-painting game board with new dates.
 		gameWindow->draw(tank2Bonus->getSprite());
 		delete tank2Bonus;
 	}
-	
+
 	for (unsigned int i = 0; i < playerTank->getFrontPoints().size(); i++) {
 			sf::Vertex point(playerTank->getFrontPoints()[i].getV2f(), sf::Color::Yellow);
 			gameWindow->draw(&point, 10, sf::Points);
@@ -365,7 +365,7 @@ void Game::update() {// re-painting game board with new dates.
 	if (player2Tank->storedBonus.size() != 0) {
 		int a = player2Tank->storedBonus.top()->getId();
 		String b = to_string(a);
-		BText tx = BText(b, Color::Red, BPoint(100, 100), MyFont);
+		BText tx = BText(b, Color::Red, BPoint(100, 100), myFont);
 		gameWindow->draw(tx.getText());
 	}
 
@@ -388,7 +388,7 @@ void Game::update() {// re-painting game board with new dates.
 			BtContinue.show();
 			BtContinue.draw(gameWindow);
 		}
-			
+
 		if (!isOnLineGame) {
 			cheatCode1.show();
 			cheatCode2.show();
@@ -517,7 +517,7 @@ Game::Game() {
 	event = new Event();
 	playerTank = new Tank(BPoint(500, 100), direction::bot, BSize(50, 50), Color(100, 255, 100, 255));//init player Tank color:r,g,b,a
 	player2Tank = new Tank(BPoint(500, 900), direction::top, BSize(50, 50), Color(255, 100, 100, 255));
-	flyThread = new std::thread(&Game::FLY, this);// init fly thread
+	flyThread = new std::thread(&Game::fly, this);// init fly thread
 	GIFThread = new std::thread(&Game::playExplosion, this);
 
 	gameMap = new GameMap();
@@ -526,11 +526,11 @@ Game::Game() {
 	pauseView.setPosition(Vector2f(0, 0));
 	pauseView.setFillColor(Color(0, 0, 0, 230));
 
-	MyFont = new Font();
-	if (!MyFont->loadFromFile("fonts/font2.ttf"))
+	myFont = new Font();
+	if (!myFont->loadFromFile("fonts/font2.ttf"))
 	{
 		std::cout << "Could not load font " << "fonts/font2.ttf" << std::endl;
-		if(!MyFont->loadFromFile("fonts/font1.otf")){
+		if(!myFont->loadFromFile("fonts/font1.otf")){
 			std::cerr << "Font1 doesn't work either, full abort\n";
 			std::exit(1);
 		}
@@ -538,9 +538,9 @@ Game::Game() {
 	}
 
 
-	pauseText = BText("Paused",Color::Red, BPoint(450, 10),MyFont,50);
+	pauseText = BText("Paused",Color::Red, BPoint(450, 10),myFont,50);
 	pauseText.GoCenter(gameRect);
-	srand(unsigned int(time(nullptr)));
+	srand((unsigned int)(time(nullptr)));
 	BtContinue = SButton(BSize(100, 50), BPoint(450, 400), Color::Red,"Continue (esc)", gameWindow);
 	BtContinue.setTextColor(Color::Blue);
 
@@ -589,13 +589,13 @@ Game::Game() {
 	dashBoard.setFillColor(Color(125, 125, 125));
 	dashBoard.setPosition(1000, 0);
 
-	tank1Hp = BText("", Color::Green, BPoint(1000, 0),MyFont,35);
-	tank2Hp = BText("", Color::Red, BPoint(1000, 900), MyFont,35);
-	lblP1Score = BText(" ", Color::Green, BPoint(1000, 35), MyFont);
-	lblP2Score = BText("", Color::Red, BPoint(1000, 935), MyFont);
-	gameOverText = BText("", Color::Yellow, BPoint(0, 0), MyFont, 50);
-	tank1Bullet = BText("", Color::Green, BPoint(1000, 65), MyFont);
-	tank2Bullet = BText("", Color::Red, BPoint(1000, 965), MyFont);
+	tank1Hp = BText("", Color::Green, BPoint(1000, 0),myFont,35);
+	tank2Hp = BText("", Color::Red, BPoint(1000, 900), myFont,35);
+	lblP1Score = BText(" ", Color::Green, BPoint(1000, 35), myFont);
+	lblP2Score = BText("", Color::Red, BPoint(1000, 935), myFont);
+	gameOverText = BText("", Color::Yellow, BPoint(0, 0), myFont, 50);
+	tank1Bullet = BText("", Color::Green, BPoint(1000, 65), myFont);
+	tank2Bullet = BText("", Color::Red, BPoint(1000, 965), myFont);
 	gameOverText.GoCenter(gameRect);
 	checkTankThread = new std::thread(&Game::checkTanks, this);
 
@@ -629,15 +629,15 @@ void Game::play() { // call this function to start playing
 
 				if (event->type == sf::Event::EventType::KeyPressed || event->type == sf::Event::EventType::TextEntered) {
 					if (event->type == sf::Event::EventType::TextEntered)
-						KeyboardDown(*event, false, true);
+						keyboardDown(*event, false, true);
 					else
-						KeyboardDown(*event, true);
+						keyboardDown(*event, true);
 				}
 
 				if (event->type == sf::Event::EventType::JoystickMoved)
-					KeyboardDown(*event, false);
+					keyboardDown(*event, false);
 				if (event->type == sf::Event::EventType::KeyReleased || event->type == sf::Event::EventType::JoystickButtonReleased)//|| Event::EventType::JoystickButtonPressed)
-					KeyboardReleased(*event);
+					keyboardReleased(*event);
 				if (event->type == sf::Event::EventType::MouseButtonPressed) {
 					mouseButtonDown(*event);
 				}
@@ -645,7 +645,7 @@ void Game::play() { // call this function to start playing
 			int time = int(gameClock.getElapsedTime().asSeconds());
 			int r = rand();
 			if ((time % 10) == r %10 && time !=0 && !(BonusList.size() >= 4)) {
-				GenerateBonus();
+				generateBonus();
 			}
 		}
 		if(gameOver) {
@@ -674,7 +674,7 @@ void Game::playExplosion() {
 				boomGifs.erase(boomGifs.begin()+i);
 		}
 		mMutexExplosion.unlock();
-		
+
 	}
 }
 
@@ -705,7 +705,7 @@ Game::~Game() {
 		if (coinVec[i])
 			delete coinVec[i];
 	}
-	
+
 	if (flyThread&&flyThread->joinable()) {
 		flyThread->detach();
 		delete flyThread;
@@ -723,15 +723,15 @@ Game::~Game() {
 			BonusList[i] = new Bonus();
 			delete BonusList[i];
 		}
-			
+
 	}
 
 
 	if (gameMap)
 		delete gameMap;
 
-	if (MyFont)
-		delete MyFont;
+	if (myFont)
+		delete myFont;
 
 	if (event)
 		delete event;

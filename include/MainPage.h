@@ -39,7 +39,7 @@ class MainPage {
 	BText tankOnline = BText("Tank Online", Color::White, BPoint(300, 50));
 	FloatRect rightConfig = FloatRect(1706 / 2, 102 / 2, 354 / 2, 41 / 2);
 	BLineEdit ipAddress = BLineEdit(BPoint(1691 / 2, 125), windowInstance, "127.0.0.1", BSize(130, 30));
-	BLineEdit portNumber = BLineEdit(BPoint(1691 / 2, 175), windowInstance, "35000", BSize(50, 30));
+	BLineEdit portNumber = BLineEdit(BPoint(1691 / 2, 175), windowInstance, "35000", BSize(50, 30));//defualt port number 35000
 	BLineEdit portNumber2 = BLineEdit(BPoint(1800 / 2, 553 / 2), windowInstance, "35000", BSize(50, 30));
 	SButton join = SButton(BSize(81 / 2, 29 / 2), BPoint(1800 / 2, 441 / 2),
 		Color::Transparent, "Join", windowInstance);
@@ -51,6 +51,7 @@ class MainPage {
 public:
 	MainPage() {
 		aSound = new BSound("sounds/music1.wav",true);
+		aSound->setVolume(50);
 		aSound->play();
 		try {
 			texture.loadFromFile("images/t1.png");

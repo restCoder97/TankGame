@@ -1,5 +1,9 @@
 #pragma once
 #include"Game.h"
+
+
+
+
 class ServerGame :public Game {
 	sf::IpAddress server;
 	std::thread*threadReceive;

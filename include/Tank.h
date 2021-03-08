@@ -44,13 +44,9 @@ protected:
 
 public:
 	std::stack<Bonus*>storedBonus;
-	bool getisMoving() {
-		return isMoving; };// start moving
+	bool getisMoving() {return isMoving; };// start moving
 	int getHp() { return nHp; }
-  int getScore() {
-		int i = 0;
-		return score;
-	}
+	int getScore() {return score;}
 	BPoint getPtMouth() { return spTank->getPeakPoint(); }// return tank's muzzle point
 	BSprite* getSpTank() { return spTank; }
 	void setGameOver();
@@ -67,120 +63,33 @@ public:
 
 	// get damage
 	void damaged(int damage);
-        //score functions
-  void addScore(unsigned int);
-  bool isCollidingWithCoin(Coin*);
-	void eat(Bonus*aBn) {
-		if (aBn->getId() == 3) {
-			nHp = 100;
-			return;
-		}
-		else if (aBn->getId() == 6) {
-			score += 10;
-			return;
-		}
-		if (storedBonus.size() != 0)
-			storedBonus.top()->pauseEffictive();
-		storedBonus.push(aBn);
-		aBn->effictive();
-	};// eating bonus
+    //score functions
+	void addScore(unsigned int);
+	bool isCollidingWithCoin(Coin*);
+	void eat(Bonus*aBn);
 
-	void checkingBonus() {
-		if (storedBonus.size() == 0)
-			return;
-		if (!storedBonus.top()->checkEffecting() && !storedBonus.top()->getExpired())
-			storedBonus.top()->effictive();
-		else if(storedBonus.top()->getExpired()){
-			Bonus*tmp = storedBonus.top();
-			tmp = new Bonus();
-			delete tmp;
-			storedBonus.pop();
-			if (!storedBonus.size() == 0)
-				storedBonus.top()->effictive();
-		}
-	}
+	void checkingBonus();
 
 	//start moving
 	void move();
-	int getBulletAmount() {
-		return nBullets;
-	}
-	void addBullet(unsigned int amount) {
-		nBullets += amount;
-	}
-	void setScore(int amount) {
-		score = amount;
-		if (score <= 0)
-			score = 0;
-	}
+	int getBulletAmount() {return nBullets;}
+	void addBullet(unsigned int amount) {nBullets += amount;}
+	void setScore(int amount);
 
 	void switchDirection(direction newDic);
 	void stop(bool hittedWall = false);
 	bool outOfScreen();
 
-	int getEffectiveBonusID() {
-		if (storedBonus.size() != 0)
-			return storedBonus.top()->getId();
-		return -1;
-	}
+	int getEffectiveBonusID();
 
-	void setBullets(int n) {
-		nBullets = n;
-	}
+	void setBullets(int n) {nBullets = n;}
 
-	void setHP(int n) {
-		nHp = n;
-	}
+	void setHP(int n) {nHp = n;}
 
-	char* serilazationOut(bool firing=false) {
-		char*result = new char[256];
-		TankData data;
-		data.x = spTank->getCenter().x;
-		data.y = spTank->getCenter().y;
-		data.bullet = nBullets;
-		data.score = score;
-		data.HP = nHp;
-		data.direction = int(spTank->getDc());
-		if (firing)
-			data.fire = 77;
-		memset(result, 0, sizeof(TankData));
-		memcpy(result, &data, sizeof(data));
-		return result;
-	}
+	char* serilazationOut(bool firing = false);
 	void setDamage(unsigned int n) { nDmg = n; }
 
-	void tankCheating(std::string strBackDoor) {
-		Bonus*aBonus = new Bonus();
-		if (strBackDoor == "lockhp") {
-			aBonus = new LockHP();
-			eat(aBonus);
-		}
-
-		if (strBackDoor == "accelerate") {
-			aBonus = new Accelerate();
-			eat(aBonus);
-		}
-
-		if (strBackDoor == "damageup") {
-			aBonus = new DamageUp();;
-			eat(aBonus);
-		}
-
-		if (strBackDoor == "recovery") {
-			aBonus = new Recovery();
-			eat(aBonus);
-		}
-
-		if (strBackDoor == "urf") {
-			aBonus = new URF();
-			eat(aBonus);
-		}
-
-		if (strBackDoor == "coin") {
-			aBonus = new Coin();
-			eat(aBonus);
-		}
-	}
+	void tankCheating(std::string strBackDoor);
 
 	~Tank();
 };

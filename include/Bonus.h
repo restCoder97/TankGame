@@ -18,37 +18,18 @@ protected:
 	bool expired = false;
 	bool pausedEffecting;
 public:
-	//Bonus() = default;
 	Bonus() : BSprite(Texture(), BSize(50, 50), top, BPoint(0, 0)) {};
 	int getEffectTime() { return effectiveTime; };
-	void setImage(Texture&aText) {
-		setTextureRect(IntRect(0, 0, 50, 50));
-		BSetTexture(aText);
-	}
-	int getId(){ return ID; };
-	void effictive() {
-		effectiveClock.restart();
-		effecting = true;
-	}
-	void pauseEffictive() {
-		effectiveTime -= int(effectiveClock.getElapsedTime().asSeconds());
-		effecting = false;
-	}
-	
-	bool checkEffecting() {
-		int nT = int(effectiveClock.getElapsedTime().asSeconds());
-		if (nT < effectiveTime)
-			effecting = true;
-		else {
-			expired = true;
-			effecting = false;
-		}
-		return effecting;
-	}
+	int getId() { return ID; };
+	bool getExpired() { return expired; }
 
-	bool getExpired() {
-		return expired;
-	}
+	void setImage(Texture&aText);
+	void effictive();
+	void pauseEffictive();
+	
+	bool checkEffecting();
+
+	
 };
 
 class LockHP :public Bonus {

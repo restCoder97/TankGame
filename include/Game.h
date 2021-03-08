@@ -21,7 +21,6 @@ protected:
 	Event*event = nullptr;
 	Tank*playerTank;
 	Tank*player2Tank;
-	//GameMap gameMap;
 	std::thread*flyThread = nullptr;// execute Bullets' move
 	std::thread*animateThread = nullptr;
 	std::thread*GIFThread = nullptr;
@@ -60,7 +59,6 @@ protected:
 	vector<BSprite>explosionList = {};
 	vector<GIF*>boomGifs = {};
 	Mutex mMutexExplosion;
-	//sf::TcpListener listener;
 	std::vector<Bullet*>bulletList;
 	std::vector<Coin*> coinVec;
 

@@ -92,8 +92,9 @@ void SingleGame::checkKeyboard() {// come to here if keyboard pressed
 		playerTank->move();
 	}
 	for (unsigned i = 0; i < gameMap->vBricks.size(); i++) {
+		vector<BPoint>tmp = playerTank->getFrontPoints();
 		if (i < gameMap->vBricks.size() &&
-			gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(),& playerTank->getFrontPoints()))
+			gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(),&tmp))
 			playerTank->stop(true);
 	}
 	checkTanks();
@@ -175,8 +176,9 @@ void SingleGame::keyboardDown(Event event, bool keyboard) {//come to here when k
 			playerTank->move();
 	}
 	for (unsigned i = 0; i < gameMap->vBricks.size(); i++) {
+		vector<BPoint>tmp = playerTank->getFrontPoints();
 		if (i < gameMap->vBricks.size() &&
-			gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(), &playerTank->getFrontPoints()))
+			gameMap->vBricks[i]->sprite.isContaining(playerTank->getPtMouth(), &tmp))
 			playerTank->stop(true);
 	}
 	checkTanks();

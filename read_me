@@ -1,0 +1,9 @@
+2D cross-platform tank game contains 3 modes: single player, multi-players and online(local network only)
+controller: joystick/keyboard & mouse 
+Developed with SFML GUI library.
+
+lead: Youxing Chen
+front-end: Sriram Atluri
+back-end: Vladimir Kataev & Michael Sanders
+Designer: Yuntian Wu
+instructor: Joy Bentely
